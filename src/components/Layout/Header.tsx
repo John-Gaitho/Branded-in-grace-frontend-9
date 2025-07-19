@@ -40,12 +40,11 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">G</span>
-            </div>
-            <span className="font-bold text-xl grace-text-gradient">
-              Blanded in Grace
+          <Link to="/" className="flex items-center space-x-3">
+            <span className="text-2xl font-bold text-foreground">BG</span>
+            <span className="text-xl font-bold">
+              <span className="text-foreground">Branded in </span>
+              <span className="text-primary">Grace</span>
             </span>
           </Link>
 

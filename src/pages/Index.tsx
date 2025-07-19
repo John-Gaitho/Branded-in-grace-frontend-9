@@ -33,42 +33,78 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center grace-gradient">
-        <div className="absolute inset-0 bg-gradient-to-br from-background/20 to-background/40" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="animate-fade-in">
-              <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                <span className="grace-text-gradient">Blanded in Grace</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Discover our beautiful collection of handcrafted cups that bring elegance and grace to every sip.
+      <section className="relative min-h-[90vh] flex items-center bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-8">
+              {/* Badge */}
+              <div className="inline-flex items-center space-x-2 text-primary text-sm">
+                <Star className="h-4 w-4" />
+                <span>New Collection Available</span>
+              </div>
+              
+              {/* Main Heading */}
+              <div className="space-y-4">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                  <span className="text-foreground">Sip in </span>
+                  <span className="text-primary">Grace</span>
+                  <span className="text-foreground">,</span>
+                  <br />
+                  <span className="text-foreground">Taste the </span>
+                  <span className="text-primary">Moment</span>
+                </h1>
+              </div>
+              
+              {/* Description */}
+              <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
+                Discover our curated collection of elegant cups and mugs, 
+                each crafted with love to make every sip a graceful experience.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" className="grace-hover">
+              
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Link to="/shop">
                     Shop Collection
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="grace-hover">
+                <Button asChild variant="outline" size="lg">
                   <Link to="/about">
-                    Our Story
+                    Learn Our Story
                   </Link>
                 </Button>
               </div>
+              
+              {/* Social Proof */}
+              <div className="flex items-center space-x-8 pt-4">
+                <div className="flex items-center space-x-2">
+                  <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                  <span className="text-foreground font-medium">4.8/5</span>
+                  <span className="text-muted-foreground">from 500+ reviews</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Heart className="h-5 w-5 text-primary" />
+                  <span className="text-foreground font-medium">500+</span>
+                  <span className="text-muted-foreground">happy customers</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Image */}
+            <div className="relative">
+              <div className="aspect-square max-w-lg mx-auto">
+                <img 
+                  src="/lovable-uploads/5de483db-5166-440f-93eb-4fb12a950849.png"
+                  alt="Elegant Grace Cup"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 animate-float">
-          <Coffee className="h-8 w-8 text-primary/30" />
-        </div>
-        <div className="absolute bottom-20 right-10 animate-float" style={{ animationDelay: '1s' }}>
-          <Heart className="h-6 w-6 text-accent/40" />
         </div>
       </section>
 
