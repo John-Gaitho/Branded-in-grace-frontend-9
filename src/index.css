@@ -139,4 +139,45 @@ All colors MUST be HSL.
   .grace-card {
     @apply rounded-xl border bg-card/50 backdrop-blur-sm shadow-sm grace-shadow;
   }
+
+  .rotating-cup {
+    animation: superRotate 8s linear infinite;
+    transform-style: preserve-3d;
+  }
+
+  .floating-cup {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes superRotate {
+    0% {
+      transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg);
+    }
+    25% {
+      transform: rotateY(90deg) rotateX(15deg) rotateZ(5deg);
+    }
+    50% {
+      transform: rotateY(180deg) rotateX(0deg) rotateZ(10deg);
+    }
+    75% {
+      transform: rotateY(270deg) rotateX(-15deg) rotateZ(-5deg);
+    }
+    100% {
+      transform: rotateY(360deg) rotateX(0deg) rotateZ(0deg);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .cup-glow {
+    filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.4)) 
+            drop-shadow(0 0 40px hsl(var(--primary) / 0.2));
+  }
 }

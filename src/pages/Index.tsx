@@ -95,13 +95,23 @@ const Index = () => {
             </div>
             
             {/* Right Image */}
-            <div className="relative">
-              <div className="aspect-square max-w-lg mx-auto">
-                <img 
-                  src="/lovable-uploads/5de483db-5166-440f-93eb-4fb12a950849.png"
-                  alt="Elegant Grace Cup"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
+            <div className="relative flex justify-center items-center">
+              <div className="relative">
+                {/* Rotating Cup Container */}
+                <div className="floating-cup">
+                  <div className="rotating-cup cup-glow">
+                    <img 
+                      src="/lovable-uploads/5de483db-5166-440f-93eb-4fb12a950849.png"
+                      alt="Elegant Grace Cup"
+                      className="w-96 h-96 object-cover rounded-2xl"
+                    />
+                  </div>
+                </div>
+                
+                {/* Decorative elements */}
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-primary/20 rounded-full animate-pulse"></div>
+                <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-primary/30 rounded-full animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 -right-8 w-4 h-4 bg-primary/20 rounded-full animate-bounce delay-500"></div>
               </div>
             </div>
           </div>
