@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut, Sun, Moon } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Sun, Moon, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -13,12 +13,14 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useTheme } from '@/hooks/useTheme';
+import { useUserRole } from '@/hooks/useUserRole';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { getCartCount } = useCart();
   const { theme, toggleTheme } = useTheme();
+  const { isAdmin } = useUserRole();
   const navigate = useNavigate();
 
   const cartCount = getCartCount();
@@ -110,6 +112,12 @@ export function Header() {
                   <DropdownMenuItem onClick={() => navigate('/profile')}>
                     Profile
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
