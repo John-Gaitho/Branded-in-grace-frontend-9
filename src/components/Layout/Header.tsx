@@ -97,6 +97,19 @@ export function Header() {
               )}
             </Button>
 
+            {/* Admin Quick Access */}
+            {user && isAdmin && (
+              <Button
+                onClick={() => navigate('/admin')}
+                size="sm"
+                variant="outline"
+                className="hidden sm:flex"
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                Admin
+              </Button>
+            )}
+
             {/* User Menu */}
             {user ? (
               <DropdownMenu>
