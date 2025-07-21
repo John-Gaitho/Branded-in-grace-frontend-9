@@ -35,11 +35,12 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center bg-background">
+      <section className="relative min-h-[90vh] flex items-center bg-background bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url('/lovable-uploads/d5a84ee5-cd60-4fcf-8782-259032cb277b.png')` }}>
+        <div className="absolute inset-0 bg-background/80"></div>
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-8 relative z-10">
               {/* Badge */}
               <div className="inline-flex items-center space-x-2 text-primary text-sm">
                 <Star className="h-4 w-4" />
@@ -95,7 +96,7 @@ const Index = () => {
             </div>
             
             {/* Right Image */}
-            <div className="relative flex justify-center items-center">
+            <div className="relative flex justify-center items-center relative z-10">
               <div className="relative">
                 {/* Rotating Cup Container */}
                 <div className="floating-cup">
