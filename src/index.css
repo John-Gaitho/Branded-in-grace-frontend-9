@@ -212,17 +212,37 @@ All colors MUST be HSL.
 
   /* Button Animations */
   .oval-button {
-    @apply rounded-full px-8 py-3 transition-all duration-300 ease-in-out;
+    @apply rounded-full px-8 py-4 transition-all duration-500 ease-out;
     transform: scale(1);
+    box-shadow: 
+      0 4px 15px hsl(var(--primary) / 0.2),
+      0 0 0 1px hsl(var(--primary) / 0.1);
   }
 
   .oval-button:hover {
-    transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 10px 25px -5px hsl(var(--primary) / 0.4);
+    transform: scale(1.05) translateY(-3px);
+    box-shadow: 
+      0 15px 35px -5px hsl(var(--primary) / 0.4),
+      0 0 30px hsl(var(--primary) / 0.3),
+      0 0 0 1px hsl(var(--primary) / 0.2);
+    filter: brightness(1.1);
+  }
+
+  .oval-button:active {
+    transform: scale(0.98) translateY(-1px);
+    transition-duration: 150ms;
   }
 
   .pulse-glow {
-    animation: pulseGlow 2s ease-in-out infinite;
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+
+  .luxury-glow {
+    animation: luxuryGlow 4s ease-in-out infinite;
+  }
+
+  .soft-bounce {
+    animation: softBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   /* Floating Animation */
@@ -280,10 +300,53 @@ All colors MUST be HSL.
 
   @keyframes pulseGlow {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
+      box-shadow: 
+        0 4px 15px hsl(var(--primary) / 0.2),
+        0 0 20px hsl(var(--primary) / 0.1);
     }
     50% {
-      box-shadow: 0 0 40px hsl(var(--primary) / 0.8), 0 0 60px hsl(var(--primary) / 0.4);
+      box-shadow: 
+        0 8px 25px hsl(var(--primary) / 0.4),
+        0 0 40px hsl(var(--primary) / 0.3),
+        0 0 60px hsl(var(--primary) / 0.1);
+    }
+  }
+
+  @keyframes luxuryGlow {
+    0%, 100% {
+      box-shadow: 
+        0 4px 20px hsl(var(--primary) / 0.15),
+        0 0 0 1px hsl(var(--primary) / 0.1);
+    }
+    25% {
+      box-shadow: 
+        0 6px 25px hsl(var(--primary) / 0.25),
+        0 0 30px hsl(var(--primary) / 0.2),
+        0 0 0 1px hsl(var(--primary) / 0.15);
+    }
+    50% {
+      box-shadow: 
+        0 8px 30px hsl(var(--primary) / 0.35),
+        0 0 50px hsl(var(--primary) / 0.25),
+        0 0 0 1px hsl(var(--primary) / 0.2);
+    }
+    75% {
+      box-shadow: 
+        0 6px 25px hsl(var(--primary) / 0.25),
+        0 0 30px hsl(var(--primary) / 0.2),
+        0 0 0 1px hsl(var(--primary) / 0.15);
+    }
+  }
+
+  @keyframes softBounce {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
     }
   }
 }

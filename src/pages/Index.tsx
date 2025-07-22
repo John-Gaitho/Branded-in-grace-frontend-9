@@ -68,13 +68,13 @@ const Index = () => {
               
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="oval-button pulse-glow bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button asChild size="lg" className="oval-button luxury-glow bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
                   <Link to="/shop">
                     Shop Collection
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="oval-button">
+                <Button asChild variant="outline" size="lg" className="oval-button hover:bg-primary/5 hover:border-primary/30 font-semibold">
                   <Link to="/about">
                     Learn Our Story
                   </Link>
@@ -151,10 +151,10 @@ const Index = () => {
           )}
           
           <div className="text-center">
-            <Button asChild size="lg" variant="outline" className="oval-button grace-hover">
+            <Button asChild size="lg" variant="outline" className="oval-button grace-hover hover:bg-primary/5 hover:border-primary/30 font-semibold">
               <Link to="/shop">
                 View All Products
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </Button>
           </div>
@@ -220,10 +220,10 @@ const Index = () => {
           <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
             Join thousands of satisfied customers who have made our cups part of their daily routine.
           </p>
-          <Button asChild size="lg" className="oval-button pulse-glow grace-hover">
+          <Button asChild size="lg" className="oval-button luxury-glow grace-hover bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
             <Link to="/shop">
               Start Shopping
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </Button>
         </div>
