@@ -51,12 +51,12 @@ const Index = () => {
               {/* Main Heading */}
               <div className="space-y-4">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                  <span className="text-foreground">Sip in </span>
-                  <span className="text-primary">Grace</span>
-                  <span className="text-foreground">,</span>
+                  <span className="text-foreground word-stagger-1">Sip in </span>
+                  <span className="text-primary text-glow word-stagger-2">Grace</span>
+                  <span className="text-foreground word-stagger-2">,</span>
                   <br />
-                  <span className="text-foreground">Taste the </span>
-                  <span className="text-primary">Moment</span>
+                  <span className="text-foreground word-stagger-3">Taste the </span>
+                  <span className="text-primary text-glow word-stagger-4">Moment</span>
                 </h1>
               </div>
               
@@ -68,13 +68,13 @@ const Index = () => {
               
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button asChild size="lg" className="oval-button pulse-glow bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Link to="/shop">
                     Shop Collection
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg">
+                <Button asChild variant="outline" size="lg" className="oval-button">
                   <Link to="/about">
                     Learn Our Story
                   </Link>
@@ -151,7 +151,7 @@ const Index = () => {
           )}
           
           <div className="text-center">
-            <Button asChild size="lg" variant="outline" className="grace-hover">
+            <Button asChild size="lg" variant="outline" className="oval-button grace-hover">
               <Link to="/shop">
                 View All Products
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -220,7 +220,7 @@ const Index = () => {
           <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
             Join thousands of satisfied customers who have made our cups part of their daily routine.
           </p>
-          <Button asChild size="lg" className="grace-hover">
+          <Button asChild size="lg" className="oval-button pulse-glow grace-hover">
             <Link to="/shop">
               Start Shopping
               <ArrowRight className="ml-2 h-5 w-5" />
