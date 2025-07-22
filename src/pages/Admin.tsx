@@ -1,6 +1,6 @@
 import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth } from '@/hooks/useAuth';
-import { AdminProductForm } from '@/components/AdminProductForm';
+import { AdminProductManagement } from '@/components/AdminProductManagement';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Navigate, Link } from 'react-router-dom';
@@ -83,7 +83,7 @@ export default function Admin() {
               </div>
             </CardHeader>
             <CardContent>
-              <AdminProductForm />
+              <AdminProductManagement />
             </CardContent>
           </Card>
         </div>

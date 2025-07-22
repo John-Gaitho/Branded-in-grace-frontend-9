@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types';
 import { ProductCard } from '@/components/ProductCard';
+import { SocialMediaButtons } from '@/components/SocialMediaButtons';
 
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -227,6 +228,9 @@ const Index = () => {
           </Button>
         </div>
       </section>
+      
+      {/* Floating Social Media Buttons */}
+      <SocialMediaButtons />
     </div>
   );
 };
