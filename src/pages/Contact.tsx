@@ -62,7 +62,7 @@ export default function Contact() {
                 <p className="text-muted-foreground mb-2">
                   For general inquiries and support
                 </p>
-                <p className="font-medium">hello@blandedingrace.com</p>
+                <p className="font-medium">blandedingrace@gmail.com</p>
               </CardContent>
             </Card>
 
@@ -93,8 +93,8 @@ export default function Contact() {
                   Come see our workshop
                 </p>
                 <p className="font-medium">
-                  123 Grace Street<br />
-                  Beautiful City, BC 12345
+                  Nairobi<br />
+                  Kenya
                 </p>
               </CardContent>
             </Card>

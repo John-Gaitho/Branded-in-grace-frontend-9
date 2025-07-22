@@ -91,7 +91,7 @@ const Index = () => {
                 <div className="flex items-center space-x-2">
                   <Heart className="h-5 w-5 text-primary" />
                   <span className="text-foreground font-medium">500+</span>
-                  <span className="text-muted-foreground">happy customers</span>
+                  <span className="text-muted-foreground">happy customers😊</span>
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ const Index = () => {
                 <div className="floating-cup">
                   <div className="rotating-cup cup-glow">
                     <img 
-                      src="/lovable-uploads/5de483db-5166-440f-93eb-4fb12a950849.png"
+                      src="/lovable-uploads/rotating.png"
                       alt="Elegant Grace Cup"
                       className="w-96 h-96 object-cover rounded-2xl"
                     />
