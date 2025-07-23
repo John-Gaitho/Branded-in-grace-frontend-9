@@ -49,6 +49,54 @@ export type Database = {
           },
         ]
       }
+      mpesa_transactions: {
+        Row: {
+          account_reference: string | null
+          amount: number
+          checkout_request_id: string
+          created_at: string
+          id: string
+          mpesa_receipt_number: string | null
+          phone_number: string
+          result_code: number | null
+          result_desc: string | null
+          status: string
+          transaction_date: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          account_reference?: string | null
+          amount: number
+          checkout_request_id: string
+          created_at?: string
+          id?: string
+          mpesa_receipt_number?: string | null
+          phone_number: string
+          result_code?: number | null
+          result_desc?: string | null
+          status?: string
+          transaction_date?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          account_reference?: string | null
+          amount?: number
+          checkout_request_id?: string
+          created_at?: string
+          id?: string
+          mpesa_receipt_number?: string | null
+          phone_number?: string
+          result_code?: number | null
+          result_desc?: string | null
+          status?: string
+          transaction_date?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
