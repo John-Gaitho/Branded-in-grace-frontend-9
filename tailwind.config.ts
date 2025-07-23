@@ -63,11 +63,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				grace: {
-					pink: 'hsl(var(--grace-pink))',
-					'pink-light': 'hsl(var(--grace-pink-light))',
-					cream: 'hsl(var(--grace-cream))',
-					gold: 'hsl(var(--grace-gold))',
-					rose: 'hsl(var(--grace-rose))'
+					green: 'hsl(var(--grace-green))',
+					'green-light': 'hsl(var(--grace-green-light))',
+					surface: 'hsl(var(--grace-surface))',
+					badge: 'hsl(var(--grace-badge))',
+					'text-muted': 'hsl(var(--grace-text-muted))'
 				}
 			},
 			borderRadius: {

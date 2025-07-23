@@ -19,6 +19,10 @@ const productSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   stock_quantity: z.number().min(0, 'Stock quantity must be positive'),
   is_featured: z.boolean().default(false),
+  free_shipping: z.boolean().default(false),
+  warranty_years: z.number().min(0, 'Warranty years must be positive').default(0),
+  return_days: z.number().min(0, 'Return days must be positive').default(30),
+  specifications: z.string().optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -38,6 +42,10 @@ export function AdminProductForm() {
       category: 'cups',
       stock_quantity: 0,
       is_featured: false,
+      free_shipping: false,
+      warranty_years: 2,
+      return_days: 30,
+      specifications: '',
     },
   });
 
@@ -225,7 +233,7 @@ export function AdminProductForm() {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price ($)</FormLabel>
+                    <FormLabel>Price (KSH)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -284,16 +292,88 @@ export function AdminProductForm() {
               )}
             />
 
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="is_featured"
-                {...form.register('is_featured')}
-                className="rounded border-border"
+            <FormField
+              control={form.control}
+              name="specifications"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Specifications</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter product specifications"
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="warranty_years"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Warranty (Years)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="2"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <label htmlFor="is_featured" className="text-sm font-medium">
-                Featured Product
-              </label>
+
+              <FormField
+                control={form.control}
+                name="return_days"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Return Policy (Days)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="30"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="is_featured"
+                  {...form.register('is_featured')}
+                  className="rounded border-border"
+                />
+                <label htmlFor="is_featured" className="text-sm font-medium">
+                  Featured Product
+                </label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="free_shipping"
+                  {...form.register('free_shipping')}
+                  className="rounded border-border"
+                />
+                <label htmlFor="free_shipping" className="text-sm font-medium">
+                  Free Shipping
+                </label>
+              </div>
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
