@@ -6,21 +6,114 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const Checkout = () => {
   const { items: cart, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('mpesa');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [billingInfo, setBillingInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: user?.email || '',
+    address: '',
+    city: '',
+    zipCode: ''
+  });
 
-  const formatPrice = (price: number) => `$${price.toFixed(2)}`;
+  const formatPrice = (price: number) => `KSh ${(price * 100).toFixed(2)}`; // Convert to KES
 
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price || 0) * item.quantity), 0);
-  const shipping = subtotal > 100 ? 0 : 9.99;
-  const tax = subtotal * 0.08;
+  const shipping = subtotal > 100 ? 0 : 500; // KSh 500 shipping
+  const tax = subtotal * 0.16; // 16% VAT in Kenya
   const total = subtotal + shipping + tax;
+
+  const handleMpesaPayment = async () => {
+    if (!phoneNumber) {
+      toast.error('Please enter your phone number');
+      return;
+    }
+
+    if (!phoneNumber.match(/^254\d{9}$/)) {
+      toast.error('Please enter a valid Kenyan phone number (254XXXXXXXXX)');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('mpesa-payment', {
+        body: {
+          phoneNumber,
+          amount: Math.round(total * 100), // Convert to cents and round
+          accountReference: `ORDER-${Date.now()}`
+        }
+      });
+
+      if (error) {
+        console.error('M-Pesa payment error:', error);
+        toast.error('Failed to initiate M-Pesa payment. Please try again.');
+      } else {
+        toast.success('M-Pesa payment initiated! Please check your phone for the payment prompt.');
+        // Start polling for payment status
+        pollPaymentStatus(data.checkoutRequestId);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Payment failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const pollPaymentStatus = async (checkoutRequestId: string) => {
+    const maxAttempts = 30; // Poll for 5 minutes (30 * 10 seconds)
+    let attempts = 0;
+
+    const poll = async () => {
+      try {
+        const { data: transactions, error } = await supabase
+          .from('mpesa_transactions')
+          .select('status')
+          .eq('checkout_request_id', checkoutRequestId)
+          .single();
+
+        if (error) {
+          console.error('Error checking payment status:', error);
+          return;
+        }
+
+        if (transactions?.status === 'completed') {
+          toast.success('Payment completed successfully!');
+          clearCart();
+          navigate('/');
+          return;
+        }
+
+        if (transactions?.status === 'failed') {
+          toast.error('Payment failed. Please try again.');
+          return;
+        }
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 10000); // Poll every 10 seconds
+        } else {
+          toast.warning('Payment status check timed out. Please contact support if payment was deducted.');
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    };
+
+    poll();
+  };
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -28,15 +121,12 @@ const Checkout = () => {
       return;
     }
 
-    setIsProcessing(true);
-    
-    // Simulate order processing
-    setTimeout(() => {
-      clearCart();
-      setIsProcessing(false);
-      toast.success('Order placed successfully!');
-      navigate('/');
-    }, 2000);
+    if (paymentMethod === 'mpesa') {
+      await handleMpesaPayment();
+    } else {
+      // Handle other payment methods here
+      toast.info('Other payment methods coming soon!');
+    }
   };
 
   if (!user) {
@@ -78,31 +168,100 @@ const Checkout = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="John" />
+                  <Input 
+                    id="firstName" 
+                    placeholder="John"
+                    value={billingInfo.firstName}
+                    onChange={(e) => setBillingInfo({...billingInfo, firstName: e.target.value})}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Doe" />
+                  <Input 
+                    id="lastName" 
+                    placeholder="Doe"
+                    value={billingInfo.lastName}
+                    onChange={(e) => setBillingInfo({...billingInfo, lastName: e.target.value})}
+                  />
                 </div>
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="john@example.com" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="john@example.com"
+                  value={billingInfo.email}
+                  onChange={(e) => setBillingInfo({...billingInfo, email: e.target.value})}
+                />
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
-                <Input id="address" placeholder="123 Main St" />
+                <Input 
+                  id="address" 
+                  placeholder="123 Main St"
+                  value={billingInfo.address}
+                  onChange={(e) => setBillingInfo({...billingInfo, address: e.target.value})}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="city">City</Label>
-                  <Input id="city" placeholder="New York" />
+                  <Input 
+                    id="city" 
+                    placeholder="Nairobi"
+                    value={billingInfo.city}
+                    onChange={(e) => setBillingInfo({...billingInfo, city: e.target.value})}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="zipCode">ZIP Code</Label>
-                  <Input id="zipCode" placeholder="10001" />
+                  <Label htmlFor="zipCode">Postal Code</Label>
+                  <Input 
+                    id="zipCode" 
+                    placeholder="00100"
+                    value={billingInfo.zipCode}
+                    onChange={(e) => setBillingInfo({...billingInfo, zipCode: e.target.value})}
+                  />
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Payment Method */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Payment Method</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="mpesa" id="mpesa" />
+                  <Label htmlFor="mpesa" className="flex items-center space-x-2">
+                    <span>M-Pesa Payment</span>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 opacity-50">
+                  <RadioGroupItem value="card" id="card" disabled />
+                  <Label htmlFor="card">Credit/Debit Card (Coming Soon)</Label>
+                </div>
+              </RadioGroup>
+
+              {paymentMethod === 'mpesa' && (
+                <div className="mt-4">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="254712345678"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="mt-1"
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Enter your M-Pesa registered phone number (format: 254XXXXXXXXX)
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -151,9 +310,10 @@ const Checkout = () => {
                   className="w-full mt-6" 
                   size="lg"
                   onClick={handlePlaceOrder}
-                  disabled={isProcessing}
+                  disabled={isProcessing || (paymentMethod === 'mpesa' && !phoneNumber)}
                 >
-                  {isProcessing ? 'Processing...' : 'Place Order'}
+                  {isProcessing ? 'Processing Payment...' : 
+                   paymentMethod === 'mpesa' ? 'Pay with M-Pesa' : 'Place Order'}
                 </Button>
               </div>
             </CardContent>
