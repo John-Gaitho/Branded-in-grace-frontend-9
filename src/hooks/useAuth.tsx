@@ -1,27 +1,43 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { authAPI } from '@/integrations/api/client';
+import { supabase } from '@/integrations/supabase/client';
 import { AuthContextType } from '@/types';
+import type { User, Session } from '@supabase/supabase-js';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing token on mount
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      // Could add token validation here
-      setUser({ id: 'user' }); // Simplified user object
-    }
-    setIsLoading(false);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const data = await authAPI.login(email, password);
-      setUser(data.user);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
       return {};
     } catch (error: any) {
       return { error: error.message };
@@ -30,7 +46,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      await authAPI.register(email, password);
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) throw error;
       return {};
     } catch (error: any) {
       return { error: error.message };
@@ -38,16 +62,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    authAPI.logout();
-    setUser(null);
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error('Error signing out:', error);
   };
 
   const refreshSession = async () => {
     try {
-      await authAPI.refresh();
+      const { error } = await supabase.auth.refreshSession();
+      if (error) throw error;
     } catch (error) {
       console.error('Token refresh failed:', error);
-      setUser(null);
     }
   };
 

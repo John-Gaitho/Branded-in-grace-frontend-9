@@ -36,7 +36,7 @@ export function AdminProductManagement() {
   const deleteProduct = async (id: string) => {
     setDeletingId(id);
     try {
-      await productsAPI.delete(parseInt(id));
+      await productsAPI.delete(id);
       setProducts(products.filter(p => p.id !== id));
       toast({
         title: 'Product deleted',

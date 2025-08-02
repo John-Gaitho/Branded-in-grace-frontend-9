@@ -71,7 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await cartAPI.removeItem(parseInt(itemId));
+      await cartAPI.removeItem(itemId);
       await refreshCart();
       toast({
         title: "Removed from cart",
@@ -94,7 +94,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await cartAPI.updateItem(parseInt(itemId), quantity);
+      await cartAPI.updateItem(itemId, quantity);
       await refreshCart();
     } catch (error) {
       console.error('Error updating quantity:', error);

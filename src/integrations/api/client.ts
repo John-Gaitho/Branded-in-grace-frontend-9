@@ -1,193 +1,280 @@
-// API client for backend integration
-const API_BASE_URL = 'http://localhost:5000'; // Update with your backend URL
+// API client for Supabase integration
+import { supabase } from '@/integrations/supabase/client';
+import type { Product, CartItem, Order } from '@/types';
 
-// Token management
-let authToken: string | null = localStorage.getItem('authToken');
-
-const setAuthToken = (token: string | null) => {
-  authToken = token;
-  if (token) {
-    localStorage.setItem('authToken', token);
-  } else {
-    localStorage.removeItem('authToken');
-  }
-};
-
-const getAuthHeaders = () => ({
-  'Content-Type': 'application/json',
-  ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
-});
-
-// Base API call function
-const apiCall = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...getAuthHeaders(),
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Network error' }));
-    throw new Error(error.message || `HTTP ${response.status}`);
-  }
-
-  return response.json();
-};
-
-// Auth API
+// Auth API using Supabase
 export const authAPI = {
   login: async (email: string, password: string) => {
-    const data = await apiCall<{ access_token: string; user: any }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
-    setAuthToken(data.access_token);
-    return data;
+    
+    if (error) throw new Error(error.message);
+    return { user: data.user };
   },
 
   register: async (email: string, password: string) => {
-    return apiCall('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`
+      }
     });
-  },
-
-  refresh: async () => {
-    const data = await apiCall<{ access_token: string }>('/auth/refresh', {
-      method: 'POST',
-    });
-    setAuthToken(data.access_token);
+    
+    if (error) throw new Error(error.message);
     return data;
   },
 
-  logout: () => {
-    setAuthToken(null);
+  refresh: async () => {
+    const { data, error } = await supabase.auth.refreshSession();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  logout: async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw new Error(error.message);
   },
 };
 
-// Products API
+// Products API using Supabase
 export const productsAPI = {
   list: async () => {
-    return apiCall<any[]>('/products/');
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw new Error(error.message);
+    return data as Product[];
   },
 
   getBySlug: async (slug: string) => {
-    return apiCall<any>(`/products/${slug}`);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data as Product;
   },
 
   create: async (productData: any) => {
-    return apiCall('/products/', {
-      method: 'POST',
-      body: JSON.stringify(productData),
-    });
+    const { data, error } = await supabase
+      .from('products')
+      .insert(productData)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data as Product;
   },
 
-  update: async (id: number, productData: any) => {
-    return apiCall(`/products/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(productData),
-    });
+  update: async (id: string, productData: Partial<Product>) => {
+    const { data, error } = await supabase
+      .from('products')
+      .update(productData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data as Product;
   },
 
-  delete: async (id: number) => {
-    return apiCall(`/products/${id}`, {
-      method: 'DELETE',
-    });
+  delete: async (id: string) => {
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw new Error(error.message);
   },
 };
 
-// Cart API
+// Cart API using Supabase
 export const cartAPI = {
   get: async () => {
-    return apiCall<any[]>('/cart/');
+    const { data, error } = await supabase
+      .from('cart_items')
+      .select(`
+        *,
+        product:products(*)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw new Error(error.message);
+    return data as CartItem[];
   },
 
-  addItem: async (productId: string, quantity: number) => {
-    return apiCall('/cart/', {
-      method: 'POST',
-      body: JSON.stringify({ product_id: productId, quantity }),
-    });
+  addItem: async (productId: string, quantity: number = 1) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    // Check if item already exists in cart
+    const { data: existingItem } = await supabase
+      .from('cart_items')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('product_id', productId)
+      .single();
+
+    if (existingItem) {
+      // Update existing item
+      const { data, error } = await supabase
+        .from('cart_items')
+        .update({ quantity: existingItem.quantity + quantity })
+        .eq('id', existingItem.id)
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } else {
+      // Create new item
+      const { data, error } = await supabase
+        .from('cart_items')
+        .insert({
+          user_id: user.id,
+          product_id: productId,
+          quantity,
+        })
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+      return data;
+    }
   },
 
-  updateItem: async (id: number, quantity: number) => {
-    return apiCall(`/cart/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ quantity }),
-    });
+  updateItem: async (id: string, quantity: number) => {
+    const { data, error } = await supabase
+      .from('cart_items')
+      .update({ quantity })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data;
   },
 
-  removeItem: async (id: number) => {
-    return apiCall(`/cart/${id}`, {
-      method: 'DELETE',
-    });
+  removeItem: async (id: string) => {
+    const { error } = await supabase
+      .from('cart_items')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw new Error(error.message);
   },
 
   clear: async () => {
-    return apiCall('/cart/', {
-      method: 'DELETE',
-    });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('cart_items')
+      .delete()
+      .eq('user_id', user.id);
+    
+    if (error) throw new Error(error.message);
   },
 };
 
-// Orders API
+// Orders API using Supabase
 export const ordersAPI = {
   list: async () => {
-    return apiCall<any[]>('/orders/');
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items(
+          *,
+          product:products(*)
+        )
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw new Error(error.message);
+    return data as Order[];
   },
 
-  get: async (id: number) => {
-    return apiCall<any>(`/orders/${id}`);
+  get: async (id: string) => {
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items(
+          *,
+          product:products(*)
+        )
+      `)
+      .eq('id', id)
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data as Order;
   },
 
   create: async (orderData: any) => {
-    return apiCall('/orders/', {
-      method: 'POST',
-      body: JSON.stringify(orderData),
-    });
+    const { data, error } = await supabase
+      .from('orders')
+      .insert(orderData)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data as Order;
   },
 };
 
-// M-Pesa API
+// M-Pesa API using Supabase Edge Functions
 export const mpesaAPI = {
-  initiatePayment: async (phone: string, amount: number, accountReference: string) => {
-    return apiCall('/mpesa/payment', {
-      method: 'POST',
-      body: JSON.stringify({
-        phone_number: phone,
+  initiatePayment: async (phoneNumber: string, amount: number, accountReference: string) => {
+    const { data, error } = await supabase.functions.invoke('mpesa-payment', {
+      body: {
+        phoneNumber,
         amount,
-        account_reference: accountReference,
-      }),
+        accountReference,
+      },
     });
+    
+    if (error) throw new Error(error.message);
+    return data;
   },
 
   checkStatus: async (checkoutRequestId: string) => {
-    return apiCall(`/mpesa/status/${checkoutRequestId}`);
+    const { data, error } = await supabase
+      .from('mpesa_transactions')
+      .select('*')
+      .eq('checkout_request_id', checkoutRequestId)
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data;
   },
 };
 
-// Upload API
+// Upload API using Supabase Storage
 export const uploadAPI = {
   uploadProductImage: async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await fetch(`${API_BASE_URL}/upload/product-images`, {
-      method: 'POST',
-      headers: {
-        ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
-      },
-      body: formData,
-    });
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = fileName;
 
-    if (!response.ok) {
-      throw new Error('Upload failed');
-    }
+    const { data, error } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, file);
 
-    return response.json();
+    if (error) throw new Error(error.message);
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+
+    return { url: publicUrl };
   },
 };
-
-export { setAuthToken, authToken };
