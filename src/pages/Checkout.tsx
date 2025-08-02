@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { mpesaAPI, ordersAPI } from '@/integrations/api/client';
 
 const Checkout = () => {
   const { items: cart, clearCart } = useCart();
@@ -48,21 +48,17 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('mpesa-payment', {
-        body: {
-          phoneNumber,
-          amount: Math.round(total * 100), // Convert to cents and round
-          accountReference: `ORDER-${Date.now()}`
-        }
-      });
+      const data = await mpesaAPI.initiatePayment(
+        phoneNumber,
+        Math.round(total * 100),
+        `ORDER-${Date.now()}`
+      ) as any;
 
-      if (error) {
-        console.error('M-Pesa payment error:', error);
-        toast.error('Failed to initiate M-Pesa payment. Please try again.');
-      } else {
+      if (data.success) {
         toast.success('M-Pesa payment initiated! Please check your phone for the payment prompt.');
-        // Start polling for payment status
-        pollPaymentStatus(data.checkoutRequestId);
+        pollPaymentStatus(data.checkout_request_id);
+      } else {
+        throw new Error(data.message || 'Payment initiation failed');
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -78,25 +74,16 @@ const Checkout = () => {
 
     const poll = async () => {
       try {
-        const { data: transactions, error } = await supabase
-          .from('mpesa_transactions')
-          .select('status')
-          .eq('checkout_request_id', checkoutRequestId)
-          .single();
+        const data = await mpesaAPI.checkStatus(checkoutRequestId) as any;
 
-        if (error) {
-          console.error('Error checking payment status:', error);
-          return;
-        }
-
-        if (transactions?.status === 'completed') {
+        if (data.status === 'completed') {
           toast.success('Payment completed successfully!');
           clearCart();
           navigate('/');
           return;
         }
 
-        if (transactions?.status === 'failed') {
+        if (data.status === 'failed') {
           toast.error('Payment failed. Please try again.');
           return;
         }

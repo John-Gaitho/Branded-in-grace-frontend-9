@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
+import { productsAPI } from '@/integrations/api/client';
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/hooks/useCart';
@@ -29,13 +29,7 @@ export default function ProductDetail() {
 
     const fetchProduct = async () => {
       try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('slug', slug)
-          .single();
-
-        if (error) throw error;
+        const data = await productsAPI.getBySlug(slug);
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Coffee, Heart, Star, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+import { productsAPI } from '@/integrations/api/client';
 import { Product } from '@/types';
 import { ProductCard } from '@/components/ProductCard';
 import { SocialMediaButtons } from '@/components/SocialMediaButtons';
@@ -15,14 +15,9 @@ const Index = () => {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_featured', true)
-          .limit(3);
-
-        if (error) throw error;
-        setFeaturedProducts(data || []);
+        const data = await productsAPI.list();
+        const featured = data.filter(product => product.is_featured).slice(0, 3);
+        setFeaturedProducts(featured || []);
       } catch (error) {
         console.error('Error fetching featured products:', error);
       } finally {

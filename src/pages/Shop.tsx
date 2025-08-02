@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { supabase } from '@/integrations/supabase/client';
+import { productsAPI } from '@/integrations/api/client';
 import { Product } from '@/types';
 import { ProductCard } from '@/components/ProductCard';
 import { debounce } from '@/lib/utils';
@@ -21,12 +21,7 @@ export default function Shop() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
+        const data = await productsAPI.list();
         setProducts(data || []);
         setFilteredProducts(data || []);
       } catch (error) {

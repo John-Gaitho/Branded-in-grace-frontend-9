@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { supabase } from '@/integrations/supabase/client';
+import { productsAPI, uploadAPI } from '@/integrations/api/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -62,24 +62,13 @@ export function AdminProductForm() {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = fileName;
-
-    const { error: uploadError } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      console.error('Error uploading image:', uploadError);
+    try {
+      const data = await uploadAPI.uploadProductImage(file);
+      return data.url;
+    } catch (error) {
+      console.error('Error uploading image:', error);
       return null;
     }
-
-    const { data } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
-
-    return data.publicUrl;
   };
 
   const generateSlug = (name: string): string => {
@@ -105,22 +94,20 @@ export function AdminProductForm() {
 
       const slug = generateSlug(data.name);
       
-      const { error } = await supabase
-        .from('products')
-        .insert({
-          name: data.name,
-          description: data.description,
-          price: Math.round(data.price * 100), // Convert to cents
-          category: data.category,
-          stock_quantity: data.stock_quantity,
-          is_featured: data.is_featured,
-          slug,
-          image_url: imageUrl,
-        });
-
-      if (error) {
-        throw error;
-      }
+      await productsAPI.create({
+        name: data.name,
+        description: data.description,
+        price: Math.round(data.price * 100), // Convert to cents
+        category: data.category,
+        stock_quantity: data.stock_quantity,
+        is_featured: data.is_featured,
+        slug,
+        image_url: imageUrl,
+        free_shipping: data.free_shipping,
+        warranty_years: data.warranty_years,
+        return_days: data.return_days,
+        specifications: data.specifications,
+      });
 
       toast({
         title: 'Product created successfully',

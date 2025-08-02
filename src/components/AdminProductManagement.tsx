@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { productsAPI } from '@/integrations/api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -15,12 +15,7 @@ export function AdminProductManagement() {
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await productsAPI.list();
       setProducts(data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -41,13 +36,7 @@ export function AdminProductManagement() {
   const deleteProduct = async (id: string) => {
     setDeletingId(id);
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await productsAPI.delete(parseInt(id));
       setProducts(products.filter(p => p.id !== id));
       toast({
         title: 'Product deleted',
