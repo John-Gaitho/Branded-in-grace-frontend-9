@@ -27,7 +27,7 @@ const Checkout = () => {
     zipCode: ''
   });
 
-  const formatPrice = (price: number) => `KSh ${(price * 100).toFixed(2)}`; // Convert to KES
+  const formatPrice = (price: number) => `KSh ${(price / 100).toFixed(2)}`; // Convert from cents to KES
 
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price || 0) * item.quantity), 0);
   const shipping = subtotal > 100 ? 0 : 500; // KSh 500 shipping
@@ -50,7 +50,7 @@ const Checkout = () => {
     try {
       const data = await mpesaAPI.initiatePayment(
         phoneNumber,
-        Math.round(total * 100),
+        Math.round(total),
         `ORDER-${Date.now()}`
       ) as any;
 
