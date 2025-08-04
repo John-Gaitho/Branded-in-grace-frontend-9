@@ -229,6 +229,29 @@ export const ordersAPI = {
     if (error) throw new Error(error.message);
     return data as Order;
   },
+
+  createOrderItem: async (orderItemData: any) => {
+    const { data, error } = await supabase
+      .from('order_items')
+      .insert(orderItemData)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  updateStatus: async (orderId: string, status: string) => {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ status })
+      .eq('id', orderId)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data as Order;
+  },
 };
 
 // M-Pesa API using Supabase Edge Functions

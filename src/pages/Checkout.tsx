@@ -34,6 +34,42 @@ const Checkout = () => {
   const tax = subtotal * 0.16; // 16% VAT in Kenya
   const total = subtotal + shipping + tax;
 
+  const createOrder = async (status: string = 'pending') => {
+    try {
+      // Create the order
+      const orderData = {
+        user_id: user?.id,
+        email: billingInfo.email || user?.email || '',
+        total_amount: Math.round(total),
+        status: status,
+        shipping_address: {
+          firstName: billingInfo.firstName,
+          lastName: billingInfo.lastName,
+          address: billingInfo.address,
+          city: billingInfo.city,
+          zipCode: billingInfo.zipCode
+        }
+      };
+
+      const order = await ordersAPI.create(orderData);
+
+      // Create order items
+      for (const item of cart) {
+        await ordersAPI.createOrderItem({
+          order_id: order.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.product?.price || 0
+        });
+      }
+
+      return order;
+    } catch (error) {
+      console.error('Error creating order:', error);
+      throw error;
+    }
+  };
+
   const handleMpesaPayment = async () => {
     if (!phoneNumber) {
       toast.error('Please enter your phone number');
@@ -48,15 +84,18 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
+      // Create order first
+      const order = await createOrder('pending');
+      
       const data = await mpesaAPI.initiatePayment(
         phoneNumber,
         Math.round(total),
-        `ORDER-${Date.now()}`
+        `ORDER-${order.id}`
       ) as any;
 
       if (data.success) {
         toast.success('M-Pesa payment initiated! Please check your phone for the payment prompt.');
-        pollPaymentStatus(data.checkout_request_id);
+        pollPaymentStatus(data.checkout_request_id, order.id);
       } else {
         throw new Error(data.message || 'Payment initiation failed');
       }
@@ -68,7 +107,7 @@ const Checkout = () => {
     }
   };
 
-  const pollPaymentStatus = async (checkoutRequestId: string) => {
+  const pollPaymentStatus = async (checkoutRequestId: string, orderId: string) => {
     const maxAttempts = 30; // Poll for 5 minutes (30 * 10 seconds)
     let attempts = 0;
 
@@ -77,13 +116,17 @@ const Checkout = () => {
         const data = await mpesaAPI.checkStatus(checkoutRequestId) as any;
 
         if (data.status === 'completed') {
+          // Update order status to paid
+          await ordersAPI.updateStatus(orderId, 'completed');
           toast.success('Payment completed successfully!');
           clearCart();
-          navigate('/');
+          navigate('/profile?tab=orders');
           return;
         }
 
         if (data.status === 'failed') {
+          // Update order status to failed
+          await ordersAPI.updateStatus(orderId, 'failed');
           toast.error('Payment failed. Please try again.');
           return;
         }
