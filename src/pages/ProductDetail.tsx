@@ -12,6 +12,8 @@ import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { ReviewForm } from '@/components/ReviewForm';
+import { ReviewsList } from '@/components/ReviewsList';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -21,6 +23,7 @@ export default function ProductDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [reviewRefreshTrigger, setReviewRefreshTrigger] = useState(0);
   const { addToCart } = useCart();
   const { user } = useAuth();
 
@@ -292,49 +295,29 @@ export default function ProductDetail() {
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Material</h4>
-                      <p className="text-muted-foreground">Premium ceramic</p>
+                      <h4 className="font-semibold mb-2">Category</h4>
+                      <p className="text-muted-foreground capitalize">{product.category}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Capacity</h4>
-                      <p className="text-muted-foreground">350ml / 12oz</p>
+                      <h4 className="font-semibold mb-2">Stock</h4>
+                      <p className="text-muted-foreground">{product.stock_quantity || 0} available</p>
                     </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Dimensions</h4>
-                      <p className="text-muted-foreground">H: 10cm, D: 8cm</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Care Instructions</h4>
-                      <p className="text-muted-foreground">Dishwasher safe</p>
-                    </div>
+                    {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
+                      <div key={key}>
+                        <h4 className="font-semibold mb-2">{key}</h4>
+                        <p className="text-muted-foreground">{value}</p>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
             
             <TabsContent value="reviews" className="mt-6">
-              <Card className="grace-card">
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="border-b pb-6 last:border-b-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, j) => (
-                              <Star key={j} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            ))}
-                          </div>
-                          <span className="font-semibold">Customer {i + 1}</span>
-                        </div>
-                        <p className="text-muted-foreground">
-                          "Absolutely love this cup! The quality is exceptional and the design is beautiful. 
-                          It's become my favorite for morning coffee."
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="space-y-6">
+                <ReviewsList productId={product.id} refreshTrigger={reviewRefreshTrigger} />
+                <ReviewForm productId={product.id} onReviewAdded={() => setReviewRefreshTrigger(prev => prev + 1)} />
+              </div>
             </TabsContent>
           </Tabs>
         </div>

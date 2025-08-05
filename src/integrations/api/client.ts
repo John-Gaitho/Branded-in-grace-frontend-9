@@ -1,6 +1,6 @@
 // API client for Supabase integration
 import { supabase } from '@/integrations/supabase/client';
-import type { Product, CartItem, Order } from '@/types';
+import type { Product, CartItem, Order, Review } from '@/types';
 
 // Auth API using Supabase
 export const authAPI = {
@@ -295,6 +295,55 @@ export const mpesaAPI = {
     
     if (error) throw new Error(error.message);
     return data;
+  },
+};
+
+// Reviews API using Supabase
+export const reviewsAPI = {
+  list: async (productId: string) => {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('product_id', productId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(error.message);
+    return data as Review[];
+  },
+
+  create: async (reviewData: any) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('reviews')
+      .insert({ ...reviewData, user_id: user.id })
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data as Review;
+  },
+
+  update: async (id: string, reviewData: any) => {
+    const { data, error } = await supabase
+      .from('reviews')
+      .update(reviewData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data as Review;
+  },
+
+  delete: async (id: string) => {
+    const { error } = await supabase
+      .from('reviews')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
   },
 };
 

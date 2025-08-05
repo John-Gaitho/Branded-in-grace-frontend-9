@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Loader2, Plus } from 'lucide-react';
+import { Upload, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProductFormData {
@@ -17,6 +17,7 @@ interface ProductFormData {
   category: string;
   stock_quantity: string;
   is_featured: boolean;
+  specifications: Record<string, string>;
 }
 
 interface AdminProductFormProps {
@@ -32,9 +33,34 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
     category: 'cups',
     stock_quantity: '',
     is_featured: false,
+    specifications: {},
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [specKey, setSpecKey] = useState('');
+  const [specValue, setSpecValue] = useState('');
+
+  const addSpecification = () => {
+    if (specKey.trim() && specValue.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        specifications: {
+          ...prev.specifications,
+          [specKey.trim()]: specValue.trim()
+        }
+      }));
+      setSpecKey('');
+      setSpecValue('');
+    }
+  };
+
+  const removeSpecification = (key: string) => {
+    setFormData(prev => {
+      const newSpecs = { ...prev.specifications };
+      delete newSpecs[key];
+      return { ...prev, specifications: newSpecs };
+    });
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -90,6 +116,7 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
         category: formData.category,
         stock_quantity: formData.stock_quantity ? parseInt(formData.stock_quantity) : 0,
         is_featured: formData.is_featured,
+        specifications: formData.specifications,
         slug,
       };
 
@@ -109,6 +136,7 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
         category: 'cups',
         stock_quantity: '',
         is_featured: false,
+        specifications: {},
       });
       
       if (onProductAdded) {
@@ -242,6 +270,47 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
                 <SelectItem value="accessories">Accessories</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Specifications Section */}
+          <div className="space-y-4">
+            <Label>Product Specifications</Label>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Specification name (e.g., Material)"
+                value={specKey}
+                onChange={(e) => setSpecKey(e.target.value)}
+              />
+              <Input
+                placeholder="Specification value (e.g., Ceramic)"
+                value={specValue}
+                onChange={(e) => setSpecValue(e.target.value)}
+              />
+              <Button type="button" onClick={addSpecification} variant="outline">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {Object.entries(formData.specifications).length > 0 && (
+              <div className="border rounded-lg p-4 space-y-2">
+                <Label className="text-sm font-medium">Current Specifications:</Label>
+                {Object.entries(formData.specifications).map(([key, value]) => (
+                  <div key={key} className="flex items-center justify-between bg-muted p-2 rounded">
+                    <span className="text-sm">
+                      <strong>{key}:</strong> {value}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeSpecification(key)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">

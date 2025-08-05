@@ -8,6 +8,17 @@ export interface Product {
   stock_quantity: number | null;
   slug: string;
   is_featured: boolean | null;
+  specifications: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Review {
+  id: string;
+  user_id: string;
+  product_id: string;
+  rating: number;
+  comment: string | null;
   created_at: string;
   updated_at: string;
 }
