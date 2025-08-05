@@ -32,6 +32,7 @@ export interface Order {
   shipping_address: any;
   created_at: string;
   updated_at: string;
+  order_items?: OrderItem[];
 }
 
 export interface OrderItem {

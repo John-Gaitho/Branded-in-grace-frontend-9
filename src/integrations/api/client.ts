@@ -202,6 +202,23 @@ export const ordersAPI = {
     return data as Order[];
   },
 
+  // Admin function to get all orders
+  listAll: async () => {
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items(
+          *,
+          product:products(*)
+        )
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw new Error(error.message);
+    return data as Order[];
+  },
+
   get: async (id: string) => {
     const { data, error } = await supabase
       .from('orders')
