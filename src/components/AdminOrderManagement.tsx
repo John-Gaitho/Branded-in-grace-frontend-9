@@ -131,6 +131,45 @@ export function AdminOrderManagement() {
               </div>
             </div>
 
+            {/* Customer Details */}
+            {order.shipping_address && (
+              <div className="mt-4 p-4 bg-muted rounded-lg">
+                <h4 className="font-medium mb-3">Customer Details:</h4>
+                <div className="grid gap-2 md:grid-cols-2">
+                  {order.shipping_address.name && (
+                    <div>
+                      <span className="text-sm font-medium">Name: </span>
+                      <span className="text-sm">{order.shipping_address.name}</span>
+                    </div>
+                  )}
+                  {order.shipping_address.phone && (
+                    <div>
+                      <span className="text-sm font-medium">Phone: </span>
+                      <span className="text-sm">{order.shipping_address.phone}</span>
+                    </div>
+                  )}
+                  {order.shipping_address.address && (
+                    <div className="md:col-span-2">
+                      <span className="text-sm font-medium">Address: </span>
+                      <span className="text-sm">{order.shipping_address.address}</span>
+                    </div>
+                  )}
+                  {order.shipping_address.city && (
+                    <div>
+                      <span className="text-sm font-medium">City: </span>
+                      <span className="text-sm">{order.shipping_address.city}</span>
+                    </div>
+                  )}
+                  {order.shipping_address.county && (
+                    <div>
+                      <span className="text-sm font-medium">County: </span>
+                      <span className="text-sm">{order.shipping_address.county}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {order.order_items && order.order_items.length > 0 && (
               <div className="mt-4">
                 <h4 className="font-medium mb-2">Order Items:</h4>
