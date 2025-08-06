@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(priceInCents: number): string {
+export function formatPrice(priceInKES: number): string {
   return new Intl.NumberFormat('en-KE', {
     style: 'currency',
     currency: 'KES',
-  }).format(priceInCents / 100)
+  }).format(priceInKES)
 }
 
 export function debounce<T extends (...args: any[]) => any>(

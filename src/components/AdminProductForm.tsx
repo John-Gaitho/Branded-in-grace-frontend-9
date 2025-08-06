@@ -111,7 +111,7 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
       const productData = {
         name: formData.name,
         description: formData.description,
-        price: Math.round(parseFloat(formData.price) * 100),
+        price: parseFloat(formData.price),
         image_url: formData.image_url,
         category: formData.category,
         stock_quantity: formData.stock_quantity ? parseInt(formData.stock_quantity) : 0,

@@ -92,7 +92,7 @@ export function AdminOrderManagement() {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
       currency: 'KES',
-    }).format(amount / 100);
+    }).format(amount);
   };
 
   useEffect(() => {

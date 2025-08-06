@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   name: string;
   description: string | null;
-  price: number; // in cents
+  price: number; // in KES
   image_url: string | null;
   category: string | null;
   stock_quantity: number | null;
@@ -37,7 +37,7 @@ export interface Order {
   id: string;
   user_id: string | null;
   email: string;
-  total_amount: number; // in cents
+  total_amount: number; // in KES
   status: string | null;
   stripe_session_id: string | null;
   shipping_address: any;
@@ -51,7 +51,7 @@ export interface OrderItem {
   order_id: string;
   product_id: string;
   quantity: number;
-  price: number; // in cents
+  price: number; // in KES
   created_at: string;
   product?: Product;
 }

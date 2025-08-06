@@ -27,10 +27,10 @@ const Checkout = () => {
     zipCode: ''
   });
 
-  const formatPrice = (price: number) => `KSh ${(price / 100).toFixed(2)}`; // Convert from cents to KES
+  const formatPrice = (price: number) => `KSh ${price.toFixed(2)}`; // Price directly in KES
 
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price || 0) * item.quantity), 0);
-  const shipping = subtotal > 100 ? 0 : 500; // KSh 500 shipping
+  const shipping = subtotal > 10000 ? 0 : 500; // KSh 500 shipping for orders under KSh 10,000
   const tax = subtotal * 0.16; // 16% VAT in Kenya
   const total = subtotal + shipping + tax;
 

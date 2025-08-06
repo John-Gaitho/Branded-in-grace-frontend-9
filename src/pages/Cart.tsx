@@ -85,7 +85,7 @@ export default function Cart() {
   }
 
   const subtotal = getCartTotal();
-  const shipping = subtotal > 5000 ? 0 : 999; // Free shipping over $50
+  const shipping = subtotal > 10000 ? 0 : 500; // Free shipping over KSh 10,000
   const total = subtotal + shipping;
 
   return (
@@ -217,9 +217,9 @@ export default function Cart() {
                   </span>
                 </div>
 
-                {shipping > 0 && subtotal < 5000 && (
+                {shipping > 0 && subtotal < 10000 && (
                   <p className="text-sm text-muted-foreground">
-                    Add {formatPrice(5000 - subtotal)} more for free shipping
+                    Add {formatPrice(10000 - subtotal)} more for free shipping
                   </p>
                 )}
 
