@@ -3,7 +3,7 @@ import { ordersAPI } from '@/integrations/api/client';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Package, User, Calendar, DollarSign } from 'lucide-react';
+import { Loader2, Package, User, Calendar, DollarSign, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Order } from '@/types';
 
@@ -11,6 +11,7 @@ export function AdminOrderManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [deletingOrder, setDeletingOrder] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchOrders = async () => {
@@ -48,6 +49,27 @@ export function AdminOrderManagement() {
       });
     } finally {
       setUpdatingStatus(null);
+    }
+  };
+
+  const deleteOrder = async (orderId: string) => {
+    try {
+      setDeletingOrder(orderId);
+      await ordersAPI.delete(orderId);
+      await fetchOrders(); // Refresh the list
+      toast({
+        title: 'Success',
+        description: 'Order deleted successfully',
+      });
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete order',
+        variant: 'destructive',
+      });
+    } finally {
+      setDeletingOrder(null);
     }
   };
 
@@ -184,7 +206,7 @@ export function AdminOrderManagement() {
               </div>
             )}
 
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex gap-2 flex-wrap">
               {order.status !== 'completed' && (
                 <Button
                   size="sm"
@@ -217,6 +239,20 @@ export function AdminOrderManagement() {
                   Cancel Order
                 </Button>
               )}
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => deleteOrder(order.id)}
+                disabled={deletingOrder === order.id || updatingStatus === order.id}
+                className="ml-auto"
+              >
+                {deletingOrder === order.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Trash2 className="h-4 w-4 mr-2" />
+                )}
+                Delete Order
+              </Button>
             </div>
           </CardContent>
         </Card>

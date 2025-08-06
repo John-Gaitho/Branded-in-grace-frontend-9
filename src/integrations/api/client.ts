@@ -269,6 +269,15 @@ export const ordersAPI = {
     if (error) throw new Error(error.message);
     return data as Order;
   },
+
+  delete: async (orderId: string) => {
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', orderId);
+    
+    if (error) throw new Error(error.message);
+  },
 };
 
 // M-Pesa API using Supabase Edge Functions
