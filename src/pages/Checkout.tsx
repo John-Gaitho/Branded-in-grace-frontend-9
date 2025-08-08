@@ -30,9 +30,7 @@ const Checkout = () => {
   const formatPrice = (price: number) => `KSh ${price.toFixed(2)}`; // Price directly in KES
 
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price || 0) * item.quantity), 0);
-  const shipping = subtotal > 10000 ? 0 : 500; // KSh 500 shipping for orders under KSh 10,000
-  const tax = subtotal * 0.16; // 16% VAT in Kenya
-  const total = subtotal + shipping + tax;
+  const total = subtotal;
 
   const createOrder = async (status: string = 'pending') => {
     try {
@@ -320,14 +318,6 @@ const Checkout = () => {
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span>{formatPrice(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>{formatPrice(tax)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">

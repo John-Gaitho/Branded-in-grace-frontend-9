@@ -85,8 +85,7 @@ export default function Cart() {
   }
 
   const subtotal = getCartTotal();
-  const shipping = subtotal > 10000 ? 0 : 500; // Free shipping over KSh 10,000
-  const total = subtotal + shipping;
+  const total = subtotal;
 
   return (
     <div className="min-h-screen py-8">
@@ -205,23 +204,6 @@ export default function Cart() {
                   <span>Subtotal</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>
-                    {shipping === 0 ? (
-                      <span className="text-green-600">Free</span>
-                    ) : (
-                      formatPrice(shipping)
-                    )}
-                  </span>
-                </div>
-
-                {shipping > 0 && subtotal < 10000 && (
-                  <p className="text-sm text-muted-foreground">
-                    Add {formatPrice(10000 - subtotal)} more for free shipping
-                  </p>
-                )}
 
                 <Separator />
 
