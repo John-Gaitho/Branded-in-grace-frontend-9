@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Mail, Clock, User, MessageSquare, CheckCircle } from 'lucide-react';
+import { Mail, Clock, User, MessageSquare, CheckCircle, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,23 @@ export default function AdminContactMessages() {
     } catch (error) {
       console.error('Error updating message:', error);
       toast.error('Failed to update message');
+    }
+  };
+
+  const deleteMessage = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .delete()
+        .eq('id', messageId);
+
+      if (error) throw error;
+
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      toast.success('Message deleted');
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error('Failed to delete message');
     }
   };
 
@@ -114,16 +131,26 @@ export default function AdminContactMessages() {
                       </div>
                     </div>
                   </div>
-                  {message.status === 'unread' && (
+                  <div className="flex gap-2">
+                    {message.status === 'unread' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markAsRead(message.id)}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Mark as Read
+                      </Button>
+                    )}
                     <Button
                       size="sm"
-                      variant="outline"
-                      onClick={() => markAsRead(message.id)}
+                      variant="destructive"
+                      onClick={() => deleteMessage(message.id)}
                     >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Mark as Read
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
                     </Button>
-                  )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
