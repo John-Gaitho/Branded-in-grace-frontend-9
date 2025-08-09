@@ -2,10 +2,11 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth } from '@/hooks/useAuth';
 import { AdminProductManagement } from '@/components/AdminProductManagement';
 import { AdminOrderManagement } from '@/components/AdminOrderManagement';
+import AdminContactMessages from '@/components/AdminContactMessages';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Navigate, Link } from 'react-router-dom';
-import { Shield, Package, ArrowLeft, ShoppingCart } from 'lucide-react';
+import { Shield, Package, ArrowLeft, ShoppingCart, MessageSquare } from 'lucide-react';
 
 export default function Admin() {
   const { user, isLoading: authLoading } = useAuth();
@@ -98,6 +99,19 @@ export default function Admin() {
             </CardHeader>
             <CardContent>
               <AdminOrderManagement />
+            </CardContent>
+          </Card>
+
+          {/* Contact Messages Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="h-5 w-5" />
+                <CardTitle>Contact Messages</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <AdminContactMessages />
             </CardContent>
           </Card>
         </div>

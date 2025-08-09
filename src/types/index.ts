@@ -81,3 +81,14 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
 }
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read';
+  created_at: string;
+  updated_at: string;
+}
