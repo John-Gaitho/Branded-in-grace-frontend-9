@@ -103,17 +103,7 @@ export default function Admin() {
           </Card>
 
           {/* Contact Messages Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5" />
-                <CardTitle>Contact Messages</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <AdminContactMessages />
-            </CardContent>
-          </Card>
+          <AdminContactMessages />
         </div>
       </div>
     </div>
