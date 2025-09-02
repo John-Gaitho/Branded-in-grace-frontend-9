@@ -4,7 +4,6 @@ import { Mail, Clock, User, MessageSquare, CheckCircle, Trash2 } from 'lucide-re
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ContactMessage } from '@/types';
 
@@ -18,13 +17,10 @@ export default function AdminContactMessages() {
 
   const fetchMessages = async () => {
     try {
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setMessages((data || []) as ContactMessage[]);
+      // Note: Your Flask backend doesn't have an endpoint to fetch contact messages
+      // You'll need to add GET /api/contact/ endpoint to your Flask backend
+      setMessages([]);
+      console.warn('Contact messages fetch endpoint not implemented in Flask backend');
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast.error('Failed to load messages');
@@ -35,19 +31,10 @@ export default function AdminContactMessages() {
 
   const markAsRead = async (messageId: string) => {
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .update({ status: 'read' })
-        .eq('id', messageId);
-
-      if (error) throw error;
-
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === messageId ? { ...msg, status: 'read' as const } : msg
-        )
-      );
-      toast.success('Message marked as read');
+      // Note: Your Flask backend doesn't have an endpoint to update contact messages
+      // You'll need to add PUT /api/contact/<id> endpoint to your Flask backend
+      console.warn('Mark as read endpoint not implemented in Flask backend');
+      toast.error('Feature not available yet');
     } catch (error) {
       console.error('Error updating message:', error);
       toast.error('Failed to update message');
@@ -56,15 +43,10 @@ export default function AdminContactMessages() {
 
   const deleteMessage = async (messageId: string) => {
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .delete()
-        .eq('id', messageId);
-
-      if (error) throw error;
-
-      setMessages(prev => prev.filter(msg => msg.id !== messageId));
-      toast.success('Message deleted');
+      // Note: Your Flask backend doesn't have an endpoint to delete contact messages
+      // You'll need to add DELETE /api/contact/<id> endpoint to your Flask backend
+      console.warn('Delete message endpoint not implemented in Flask backend');
+      toast.error('Feature not available yet');
     } catch (error) {
       console.error('Error deleting message:', error);
       toast.error('Failed to delete message');

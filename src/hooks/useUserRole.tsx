@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
-import { supabase } from '@/integrations/supabase/client';
 
 type UserRole = 'admin' | 'owner' | 'user' | null;
 
@@ -18,18 +17,11 @@ export function useUserRole() {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching user role:', error);
-          setRole('user'); // default to user role
-        } else {
-          setRole(data?.role || 'user');
-        }
+        // Note: Your Flask backend doesn't have user roles endpoint yet
+        // You'll need to add user roles functionality to your Flask backend
+        // For now, we'll default to 'user' role
+        setRole('user');
+        console.warn('User roles not implemented in Flask backend yet');
       } catch (error) {
         console.error('Error fetching user role:', error);
         setRole('user');

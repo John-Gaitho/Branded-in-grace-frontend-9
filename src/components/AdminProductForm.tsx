@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { productsAPI, uploadAPI } from '@/integrations/api/client';
 
 interface ProductFormData {
   name: string;
@@ -68,21 +68,8 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
 
     try {
       setIsUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = fileName;
-
-      const { data, error } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-
-      setFormData(prev => ({ ...prev, image_url: publicUrl }));
+      const response = await uploadAPI.uploadProductImage(file);
+      setFormData(prev => ({ ...prev, image_url: response.url }));
       toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Upload error:', error);
@@ -120,11 +107,7 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
         slug,
       };
 
-      const { error } = await supabase
-        .from('products')
-        .insert(productData);
-
-      if (error) throw error;
+      await productsAPI.create(productData);
       
       toast.success('Product created successfully');
       

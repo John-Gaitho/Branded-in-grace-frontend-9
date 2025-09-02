@@ -11,8 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { ordersAPI } from '@/integrations/api/client';
+import { ordersAPI, mpesaAPI } from '@/integrations/api/client';
 import type { Order } from '@/types';
 
 interface Profile {
@@ -58,50 +57,16 @@ export default function Profile() {
 
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user?.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error fetching profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load profile information",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data) {
-        setProfile(data);
-        setFormData({
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
-          phone_number: data.phone_number || '',
-          address: data.address || ''
-        });
-      } else {
-        // Create new profile if it doesn't exist
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: user?.id,
-            first_name: '',
-            last_name: '',
-            phone_number: '',
-            address: ''
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-        } else {
-          setProfile(newProfile);
-        }
-      }
+      // Note: Your Flask backend doesn't have user profiles endpoint yet
+      // You'll need to add user profiles functionality to your Flask backend
+      // For now, we'll use local state only
+      console.warn('User profiles not implemented in Flask backend yet');
+      setFormData({
+        first_name: '',
+        last_name: '',
+        phone_number: '',
+        address: ''
+      });
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -119,32 +84,13 @@ export default function Profile() {
     setIsSaving(true);
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          phone_number: formData.phone_number,
-          address: formData.address
-        })
-        .eq('user_id', user?.id);
-
-      if (error) {
-        console.error('Error updating profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update profile",
-          variant: "destructive",
-        });
-        return;
-      }
-
+      // Note: Your Flask backend doesn't have user profiles endpoint yet
+      // You'll need to add user profiles functionality to your Flask backend
+      console.warn('User profiles update not implemented in Flask backend yet');
       toast({
-        title: "Success",
-        description: "Profile updated successfully",
+        title: "Info",
+        description: "Profile updates not available yet",
       });
-      
-      fetchProfile();
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -204,24 +150,11 @@ export default function Profile() {
     setIsProcessingPayment(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('mpesa-payment', {
-        body: {
-          amount: parseFloat(paymentAmount),
-          phone_number: formData.phone_number,
-          account_reference: user?.email || 'BlandedInGrace',
-          transaction_desc: 'Payment to Blanded in Grace'
-        }
-      });
-
-      if (error) {
-        console.error('M-Pesa payment error:', error);
-        toast({
-          title: "Payment Error",
-          description: error.message || "Failed to initiate M-Pesa payment",
-          variant: "destructive",
-        });
-        return;
-      }
+      const response = await mpesaAPI.initiatePayment(
+        formData.phone_number,
+        parseFloat(paymentAmount),
+        user?.email || 'BlandedInGrace'
+      );
 
       toast({
         title: "Payment Initiated",
@@ -229,11 +162,11 @@ export default function Profile() {
       });
       
       setPaymentAmount('');
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (error: any) {
+      console.error('M-Pesa payment error:', error);
       toast({
-        title: "Error",
-        description: "An unexpected error occurred",
+        title: "Payment Error",
+        description: error.message || "Failed to initiate M-Pesa payment",
         variant: "destructive",
       });
     } finally {

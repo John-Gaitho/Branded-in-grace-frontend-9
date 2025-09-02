@@ -6,8 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { contactAPI } from '@/integrations/api/client';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -24,18 +24,12 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert([{
-          name: formData.name,
-          email: formData.email,
-          subject: formData.subject,
-          message: formData.message
-        }]);
-
-      if (error) {
-        throw error;
-      }
+      await contactAPI.create({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message
+      });
 
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });

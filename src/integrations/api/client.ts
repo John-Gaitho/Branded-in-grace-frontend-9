@@ -1,378 +1,273 @@
-// API client for Supabase integration
-import { supabase } from '@/integrations/supabase/client';
+// API client for Flask backend
 import type { Product, CartItem, Order, Review } from '@/types';
 
-// Auth API using Supabase
+// Base URL for your Flask backend
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://your-backend-domain.com' 
+  : 'http://localhost:5000';
+
+// Helper function to get auth token from localStorage
+const getAuthToken = () => {
+  return localStorage.getItem('auth_token');
+};
+
+// Helper function to make authenticated requests
+const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
+  const token = getAuthToken();
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `HTTP error! status: ${response.status}`);
+  }
+
+  // Handle empty responses
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    return await response.json();
+  }
+  return null;
+};
+
+// Auth API using Flask backend
 export const authAPI = {
   login: async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const response = await apiRequest('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
     });
     
-    if (error) throw new Error(error.message);
-    return { user: data.user };
+    if (response.access_token) {
+      localStorage.setItem('auth_token', response.access_token);
+    }
+    
+    return { user: response.user, token: response.access_token };
   },
 
   register: async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`
-      }
+    const response = await apiRequest('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
     });
     
-    if (error) throw new Error(error.message);
-    return data;
+    if (response.access_token) {
+      localStorage.setItem('auth_token', response.access_token);
+    }
+    
+    return { user: response.user, token: response.access_token };
   },
 
-  refresh: async () => {
-    const { data, error } = await supabase.auth.refreshSession();
-    if (error) throw new Error(error.message);
-    return data;
+  me: async () => {
+    return await apiRequest('/api/auth/me');
   },
 
   logout: async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw new Error(error.message);
+    localStorage.removeItem('auth_token');
   },
 };
 
-// Products API using Supabase
+// Products API using Flask backend
 export const productsAPI = {
   list: async () => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) throw new Error(error.message);
-    return data as Product[];
+    return await apiRequest('/api/products/') as Product[];
   },
 
   getBySlug: async (slug: string) => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('slug', slug)
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data as Product;
+    return await apiRequest(`/api/products/${slug}`) as Product;
   },
 
   create: async (productData: any) => {
-    const { data, error } = await supabase
-      .from('products')
-      .insert(productData)
-      .select()
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data as Product;
+    return await apiRequest('/api/products/', {
+      method: 'POST',
+      body: JSON.stringify(productData),
+    }) as Product;
   },
 
-  update: async (id: string, productData: Partial<Product>) => {
-    const { data, error } = await supabase
-      .from('products')
-      .update(productData)
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data as Product;
+  update: async (slug: string, productData: Partial<Product>) => {
+    return await apiRequest(`/api/products/${slug}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData),
+    }) as Product;
   },
 
-  delete: async (id: string) => {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw new Error(error.message);
+  delete: async (slug: string) => {
+    await apiRequest(`/api/products/${slug}`, {
+      method: 'DELETE',
+    });
   },
 };
 
-// Cart API using Supabase
+// Cart API using Flask backend
 export const cartAPI = {
-  get: async () => {
-    const { data, error } = await supabase
-      .from('cart_items')
-      .select(`
-        *,
-        product:products(*)
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw new Error(error.message);
-    return data as CartItem[];
+  get: async (): Promise<CartItem[]> => {
+    const result = await apiRequest('/api/cart/');
+    return result || [];
   },
 
   addItem: async (productId: string, quantity: number = 1) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    // Check if item already exists in cart
-    const { data: existingItem } = await supabase
-      .from('cart_items')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('product_id', productId)
-      .single();
-
-    if (existingItem) {
-      // Update existing item
-      const { data, error } = await supabase
-        .from('cart_items')
-        .update({ quantity: existingItem.quantity + quantity })
-        .eq('id', existingItem.id)
-        .select()
-        .single();
-      
-      if (error) throw new Error(error.message);
-      return data;
-    } else {
-      // Create new item
-      const { data, error } = await supabase
-        .from('cart_items')
-        .insert({
-          user_id: user.id,
-          product_id: productId,
-          quantity,
-        })
-        .select()
-        .single();
-      
-      if (error) throw new Error(error.message);
-      return data;
-    }
+    return await apiRequest('/api/cart/add', {
+      method: 'POST',
+      body: JSON.stringify({ product_id: productId, quantity }),
+    });
   },
 
   updateItem: async (id: string, quantity: number) => {
-    const { data, error } = await supabase
-      .from('cart_items')
-      .update({ quantity })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data;
+    return await apiRequest('/api/cart/update', {
+      method: 'POST',
+      body: JSON.stringify({ item_id: id, quantity }),
+    });
   },
 
   removeItem: async (id: string) => {
-    const { error } = await supabase
-      .from('cart_items')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw new Error(error.message);
+    await apiRequest(`/api/cart/${id}`, {
+      method: 'DELETE',
+    });
   },
 
   clear: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { error } = await supabase
-      .from('cart_items')
-      .delete()
-      .eq('user_id', user.id);
-    
-    if (error) throw new Error(error.message);
+    try {
+      const cartItems = await cartAPI.get();
+      if (cartItems && cartItems.length > 0) {
+        await Promise.all(cartItems.map(item => cartAPI.removeItem(item.id)));
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      throw error;
+    }
   },
 };
 
-// Orders API using Supabase
+// Orders API using Flask backend
 export const ordersAPI = {
   list: async () => {
-    const { data, error } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        order_items(
-          *,
-          product:products(*)
-        )
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw new Error(error.message);
-    return data as Order[];
+    return await apiRequest('/api/orders/') as Order[];
   },
 
-  // Admin function to get all orders
+  // Admin function to get all orders - same endpoint but with admin privileges
   listAll: async () => {
-    const { data, error } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        order_items(
-          *,
-          product:products(*)
-        )
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw new Error(error.message);
-    return data as Order[];
+    return await apiRequest('/api/orders/') as Order[];
   },
 
   get: async (id: string) => {
-    const { data, error } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        order_items(
-          *,
-          product:products(*)
-        )
-      `)
-      .eq('id', id)
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data as Order;
+    return await apiRequest(`/api/orders/${id}`) as Order;
   },
 
   create: async (orderData: any) => {
-    const { data, error } = await supabase
-      .from('orders')
-      .insert(orderData)
-      .select()
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data as Order;
+    return await apiRequest('/api/orders/', {
+      method: 'POST',
+      body: JSON.stringify(orderData),
+    }) as Order;
   },
 
   createOrderItem: async (orderItemData: any) => {
-    const { data, error } = await supabase
-      .from('order_items')
-      .insert(orderItemData)
-      .select()
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data;
+    return await apiRequest('/api/order-items/', {
+      method: 'POST',
+      body: JSON.stringify(orderItemData),
+    });
   },
 
   updateStatus: async (orderId: string, status: string) => {
-    const { data, error } = await supabase
-      .from('orders')
-      .update({ status })
-      .eq('id', orderId)
-      .select()
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data as Order;
+    return await apiRequest(`/api/orders/${orderId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }) as Order;
   },
 
   delete: async (orderId: string) => {
-    const { error } = await supabase
-      .from('orders')
-      .delete()
-      .eq('id', orderId);
-    
-    if (error) throw new Error(error.message);
+    await apiRequest(`/api/orders/${orderId}`, {
+      method: 'DELETE',
+    });
   },
 };
 
-// M-Pesa API using Supabase Edge Functions
+// M-Pesa API using Flask backend
 export const mpesaAPI = {
   initiatePayment: async (phoneNumber: string, amount: number, accountReference: string) => {
-    const { data, error } = await supabase.functions.invoke('mpesa-payment', {
-      body: {
-        phoneNumber,
+    return await apiRequest('/api/mpesa/stkpush', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone_number: phoneNumber,
         amount,
-        accountReference,
-      },
+        account_reference: accountReference,
+      }),
     });
-    
-    if (error) throw new Error(error.message);
-    return data;
   },
 
   checkStatus: async (checkoutRequestId: string) => {
-    const { data, error } = await supabase
-      .from('mpesa_transactions')
-      .select('*')
-      .eq('checkout_request_id', checkoutRequestId)
-      .single();
-    
-    if (error) throw new Error(error.message);
-    return data;
+    const transactions = await apiRequest('/api/mpesa/transactions');
+    return Array.isArray(transactions) ? transactions.find((t: any) => t.checkout_request_id === checkoutRequestId) : null;
+  },
+
+  listTransactions: async () => {
+    return await apiRequest('/api/mpesa/transactions');
   },
 };
 
-// Reviews API using Supabase
+// Reviews API using Flask backend
 export const reviewsAPI = {
   list: async (productId: string) => {
-    const { data, error } = await supabase
-      .from('reviews')
-      .select('*')
-      .eq('product_id', productId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw new Error(error.message);
-    return data as Review[];
+    return await apiRequest(`/api/reviews/product/${productId}`) as Review[];
   },
 
   create: async (reviewData: any) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data, error } = await supabase
-      .from('reviews')
-      .insert({ ...reviewData, user_id: user.id })
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
-    return data as Review;
+    return await apiRequest('/api/reviews/', {
+      method: 'POST',
+      body: JSON.stringify(reviewData),
+    }) as Review;
   },
 
   update: async (id: string, reviewData: any) => {
-    const { data, error } = await supabase
-      .from('reviews')
-      .update(reviewData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
-    return data as Review;
+    // Note: Your Flask backend doesn't seem to have update endpoint for reviews
+    // You may need to add this endpoint to your Flask backend
+    throw new Error('Update review endpoint not implemented in Flask backend');
   },
 
   delete: async (id: string) => {
-    const { error } = await supabase
-      .from('reviews')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw new Error(error.message);
+    // Note: Your Flask backend doesn't seem to have delete endpoint for reviews
+    // You may need to add this endpoint to your Flask backend
+    throw new Error('Delete review endpoint not implemented in Flask backend');
   },
 };
 
-// Upload API using Supabase Storage
+// Contact API using Flask backend
+export const contactAPI = {
+  create: async (contactData: any) => {
+    return await apiRequest('/api/contact/', {
+      method: 'POST',
+      body: JSON.stringify(contactData),
+    });
+  },
+};
+
+// Upload API - Note: You'll need to implement file upload endpoint in your Flask backend
 export const uploadAPI = {
   uploadProductImage: async (file: File) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = fileName;
+    const formData = new FormData();
+    formData.append('image', file);
 
-    const { data, error } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, file);
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/upload/product-image`, {
+      method: 'POST',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      body: formData,
+    });
 
-    if (error) throw new Error(error.message);
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
+    }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
-
-    return { url: publicUrl };
+    return await response.json();
   },
 };
