@@ -81,7 +81,9 @@ export const authAPI = {
 // Products API using Flask backend
 export const productsAPI = {
   list: async () => {
-    return await apiRequest('/api/products/') as Product[];
+    const response = await apiRequest('/api/products/');
+    // Flask backend returns { products: [], total: number, current_page: number, pages: number }
+    return response?.products || [] as Product[];
   },
 
   getBySlug: async (slug: string) => {
