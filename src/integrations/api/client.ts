@@ -4,7 +4,7 @@ import type { Product, CartItem, Order, Review } from '@/types';
 // Base URL for your Flask backend
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://ecommerce-3-tqac.onrender.com'  
-  : 'http://localhost:5000';
+  : 'https://ecommerce-3-tqac.onrender.com';
 
 // Helper function to get auth token from localStorage
 const getAuthToken = () => {
