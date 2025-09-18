@@ -1,155 +1,140 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { motion } from "framer-motion";
 
 export default function SizeGuide() {
-  const cupSizes = [
-    {
-      size: "Small",
-      capacity: "200ml",
-      dimensions: "7cm H × 8cm W",
-      bestFor: "Espresso, cortado, small coffee"
-    },
-    {
-      size: "Medium",
-      capacity: "350ml",
-      dimensions: "9cm H × 9cm W",
-      bestFor: "Regular coffee, tea, hot chocolate"
-    },
-    {
-      size: "Large",
-      capacity: "500ml",
-      dimensions: "11cm H × 10cm W",
-      bestFor: "Large coffee, latte, chai"
-    },
-    {
-      size: "Extra Large",
-      capacity: "650ml",
-      dimensions: "13cm H × 11cm W",
-      bestFor: "Travel mug, large beverages"
-    }
+  const apparelSizes = [
+    { type: "T-Shirts", sizes: "S – 3XL", fit: "Unisex, true to size" },
+    { type: "Hoodies", sizes: "S – 3XL", fit: "Relaxed fit, cozy fleece-lined" }
   ];
 
-  const handleSizes = [
-    {
-      type: "No Handle",
-      description: "Smooth, minimalist design perfect for mindful drinking"
-    },
-    {
-      type: "Standard Handle",
-      description: "Traditional comfortable grip, 3cm wide opening"
-    },
-    {
-      type: "Large Handle",
-      description: "Extra comfortable grip, 4cm wide opening"
-    }
+  const accessorySizes = [
+    { type: "Keyholders", description: "Compact leather or acrylic designs, approx. 5cm × 3cm" },
+    { type: "Bracelets", description: "Adjustable band, fits most wrists comfortably" }
   ];
+
+  const drinkwareSizes = [
+    { size: "Small", capacity: "200ml", bestFor: "Espresso, cortado" },
+    { size: "Medium", capacity: "350ml", bestFor: "Coffee, tea" },
+    { size: "Large", capacity: "500ml", bestFor: "Latte, chai" },
+    { size: "XL", capacity: "650ml", bestFor: "Smoothies, travel drinks" }
+  ];
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.2 }
+    })
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Size Guide</h1>
+          <h1 className="text-3xl font-bold mb-4">📏 Product Size & Fit Guide</h1>
           <p className="text-muted-foreground">
-            Find the perfect cup size for your favorite beverages
+            Helping you choose the perfect size for apparel, accessories, and custom gifts
           </p>
         </div>
 
         <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Cup Sizes & Capacities</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Size</TableHead>
-                    <TableHead>Capacity</TableHead>
-                    <TableHead>Dimensions</TableHead>
-                    <TableHead>Best For</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {cupSizes.map((cup, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{cup.size}</TableCell>
-                      <TableCell>{cup.capacity}</TableCell>
-                      <TableCell>{cup.dimensions}</TableCell>
-                      <TableCell className="text-muted-foreground">{cup.bestFor}</TableCell>
+          {/* Apparel */}
+          <motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
+            <Card>
+              <CardHeader>
+                <CardTitle>👕 Apparel (T-Shirts & Hoodies)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Item</TableHead>
+                      <TableHead>Available Sizes</TableHead>
+                      <TableHead>Fit Description</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {apparelSizes.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{item.type}</TableCell>
+                        <TableCell>{item.sizes}</TableCell>
+                        <TableCell className="text-muted-foreground">{item.fit}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Handle Options</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {handleSizes.map((handle, index) => (
+          {/* Accessories */}
+          <motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1}>
+            <Card>
+              <CardHeader>
+                <CardTitle>🔑 Accessories</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {accessorySizes.map((item, index) => (
                   <div key={index} className="border-l-4 border-primary pl-4">
-                    <h3 className="font-medium">{handle.type}</h3>
-                    <p className="text-sm text-muted-foreground">{handle.description}</p>
+                    <h3 className="font-medium">{item.type}</h3>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Choosing the Right Size</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">For Coffee Lovers</h3>
-                <p className="text-sm text-muted-foreground">
-                  Small (200ml) for espresso and strong coffee, Medium (350ml) for regular coffee, 
-                  Large (500ml) for lattes and cappuccinos.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">For Tea Enthusiasts</h3>
-                <p className="text-sm text-muted-foreground">
-                  Medium (350ml) for most teas, Large (500ml) for herbal teas and chai that you want to savor slowly.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">For Hot Chocolate & Specialty Drinks</h3>
-                <p className="text-sm text-muted-foreground">
-                  Large (500ml) or Extra Large (650ml) for indulgent hot chocolates, smoothies, and specialty beverages.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Drinkware */}
+          <motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2}>
+            <Card>
+              <CardHeader>
+                <CardTitle>☕ Drinkware Sizes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Size</TableHead>
+                      <TableHead>Capacity</TableHead>
+                      <TableHead>Best For</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {drinkwareSizes.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{item.size}</TableCell>
+                        <TableCell>{item.capacity}</TableCell>
+                        <TableCell className="text-muted-foreground">{item.bestFor}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Still Unsure?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Not sure which size is right for you? Here are some tips:
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-sm text-muted-foreground">
-                <li>Consider your typical beverage volume</li>
-                <li>Think about how long you like your drink to stay warm</li>
-                <li>Medium (350ml) is our most popular size - great for most drinks</li>
-                <li>When in doubt, larger sizes work well for smaller portions too</li>
-              </ul>
-              <div className="mt-6 p-4 bg-muted rounded-lg">
-                <p className="text-sm">
-                  <strong>Need personal advice?</strong> Contact us at hello@blandedingrace.com 
-                  and we'll help you choose the perfect size for your needs!
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* General Tips */}
+          <motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3}>
+            <Card>
+              <CardHeader>
+                <CardTitle>💡 Choosing the Right Size</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc pl-6 space-y-2 text-sm text-muted-foreground">
+                  <li>Check product descriptions for size and material details</li>
+                  <li>Use our size guide to compare with items you already own</li>
+                  <li>Contact us if you're unsure — we’re happy to help!</li>
+                </ul>
+                <div className="mt-6 p-4 bg-muted rounded-lg">
+                  <p className="text-sm">
+                    <strong>Need help choosing?</strong> Email us at <a href="mailto:brandedingrace@gmail.com" className="underline">brandedingrace@gmail.com</a> or message us on WhatsApp.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

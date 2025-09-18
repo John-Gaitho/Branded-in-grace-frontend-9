@@ -3,39 +3,43 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export default function FAQ() {
   const faqs = [
-    {
-      question: "What materials are your cups made from?",
-      answer: "Our cups are crafted from high-quality ceramics and food-safe materials. Each piece is carefully selected for durability and beauty, ensuring your beverages taste their best."
-    },
-    {
-      question: "How long does shipping take?",
-      answer: "We typically process and ship orders within 1-2 business days. Standard shipping takes 3-5 business days within Kenya, while express shipping takes 1-2 business days."
-    },
-    {
-      question: "Do you offer international shipping?",
-      answer: "Currently, we ship within Kenya only. We're working to expand our shipping options to serve customers internationally in the future."
-    },
-    {
-      question: "Can I track my order?",
-      answer: "Yes! Once your order ships, you'll receive a tracking number via email. You can use this to monitor your package's progress."
-    },
-    {
-      question: "What if my cup arrives damaged?",
-      answer: "We take great care in packaging, but if your item arrives damaged, please contact us within 48 hours with photos. We'll arrange a replacement or full refund immediately."
-    },
-    {
-      question: "Are your cups dishwasher safe?",
-      answer: "Yes, most of our cups are dishwasher safe. However, we recommend hand washing to preserve the beautiful finishes and extend the life of your cups."
-    },
-    {
-      question: "Do you offer custom designs?",
-      answer: "We occasionally offer limited custom design services. Please contact us with your specific requirements, and we'll let you know what's possible."
-    },
-    {
-      question: "What's your return policy?",
-      answer: "We offer a 30-day return policy for unused items in original packaging. Custom or personalized items cannot be returned unless defective."
-    }
-  ];
+  {
+    question: "What types of products do you sell?",
+    answer:
+      "We offer a wide range of personalized products including glass tumblers, thermal flasks, water bottles, mugs, t-shirts, hoodies, sweatshirts, keychains, and more. All items can be customized with logos, names, or your own designs.",
+  },
+  {
+    question: "Can I personalize my order?",
+    answer:
+      "Certainly! Most of our products are customizable. Whether it’s your name, design, or logo, we’ll design it just for you. Simply contact us with your details.",
+  },
+  {
+    question: "Do you offer bulk or corporate orders?",
+    answer:
+      "Yes, we do! We offer discounts and custom packages for bulk orders including events, corporate gifts, bridal parties, schools, and church groups. Reach out to us for a personalized quote.",
+  },
+  {
+    question: "How long does it take to process and ship my order?",
+    answer:
+      "Processing time for customized orders is 1–3 business days. Standard shipping within Kenya takes 1–3 business days. International shipping times may vary depending on the destination.",
+  },
+  {
+    question: "Can I return or exchange an item?",
+    answer:
+      "Returns and exchanges are accepted within 3 days for non-custom items that are unused and in their original condition. Customized products are non-refundable unless they arrive damaged or with an error on our part.",
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer:
+      "We accept M-Pesa, bank transfers, and major mobile payment platforms. Payment instructions will be provided at checkout.",
+  },
+  {
+    question: "Do you ship internationally?",
+    answer:
+      "Yes, we do! Please note that international delivery fees and timelines vary. Customs duties may apply depending on your country’s import regulations.",
+  },
+];
+
 
   return (
     <div className="container mx-auto px-4 py-8">

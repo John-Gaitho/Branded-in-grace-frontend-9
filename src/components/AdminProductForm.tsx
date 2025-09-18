@@ -30,7 +30,7 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
     description: '',
     price: '',
     image_url: '',
-    category: 'cups',
+    category: 'eg mugs',
     stock_quantity: '',
     is_featured: false,
     specifications: {},
@@ -247,10 +247,16 @@ export function AdminProductForm({ onProductAdded }: AdminProductFormProps = {})
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cups">Cups</SelectItem>
+                <SelectItem value="cups">Glass tumblers</SelectItem>
                 <SelectItem value="mugs">Mugs</SelectItem>
-                <SelectItem value="bottles">Bottles</SelectItem>
-                <SelectItem value="accessories">Accessories</SelectItem>
+                <SelectItem value="bottles">Water Bottles</SelectItem>
+                <SelectItem value="thermal">Thermal flasks</SelectItem>
+                <SelectItem value="tshirts">Tshirts</SelectItem>
+                <SelectItem value="hoodies">Hoodies</SelectItem>
+                <SelectItem value="sweatshirts">Sweatshirts</SelectItem>
+                <SelectItem value="keychains">Keychains</SelectItem>
+                <SelectItem value="cards">Posters and cards</SelectItem>
+
               </SelectContent>
             </Select>
           </div>

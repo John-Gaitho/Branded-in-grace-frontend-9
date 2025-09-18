@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { ordersAPI } from '@/integrations/api/client';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,17 +6,22 @@ import { Loader2, Package, User, Calendar, DollarSign, Trash2 } from 'lucide-rea
 import { useToast } from '@/hooks/use-toast';
 import type { Order } from '@/types';
 
-export function AdminOrderManagement() {
+
+export default function AdminOrderManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [deletingOrder, setDeletingOrder] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const data = await ordersAPI.listAll();
+      const res = await fetch(`${API_URL}/api/orders`);
+      if (!res.ok) throw new Error('Failed to fetch orders');
+      const data = await res.json();
       setOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -34,8 +38,13 @@ export function AdminOrderManagement() {
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       setUpdatingStatus(orderId);
-      await ordersAPI.updateStatus(orderId, newStatus);
-      await fetchOrders(); // Refresh the list
+      const res = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) throw new Error('Failed to update order status');
+      await fetchOrders();
       toast({
         title: 'Success',
         description: 'Order status updated successfully',
@@ -55,8 +64,11 @@ export function AdminOrderManagement() {
   const deleteOrder = async (orderId: string) => {
     try {
       setDeletingOrder(orderId);
-      await ordersAPI.delete(orderId);
-      await fetchOrders(); // Refresh the list
+      const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete order');
+      await fetchOrders();
       toast({
         title: 'Success',
         description: 'Order deleted successfully',
@@ -197,7 +209,10 @@ export function AdminOrderManagement() {
                 <h4 className="font-medium mb-2">Order Items:</h4>
                 <div className="space-y-2">
                   {order.order_items.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center text-sm bg-muted p-2 rounded">
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center text-sm bg-muted p-2 rounded"
+                    >
                       <span>{item.product?.name} x {item.quantity}</span>
                       <span className="font-medium">{formatCurrency(item.price * item.quantity)}</span>
                     </div>

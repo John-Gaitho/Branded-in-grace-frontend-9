@@ -25,6 +25,7 @@ import SizeGuide from "./pages/SizeGuide";
 import CareInstructions from "./pages/CareInstructions";
 import Shipping from "./pages/Shipping";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -55,6 +56,7 @@ const App = () => (
                     <Route path="/size-guide" element={<SizeGuide />} />
                     <Route path="/care-instructions" element={<CareInstructions />} />
                     <Route path="/shipping" element={<Shipping />} />
+
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

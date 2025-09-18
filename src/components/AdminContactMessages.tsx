@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ContactMessage } from '@/types';
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function AdminContactMessages() {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,13 +19,18 @@ export default function AdminContactMessages() {
 
   const fetchMessages = async () => {
     try {
-      // Note: Your Flask backend doesn't have an endpoint to fetch contact messages
-      // You'll need to add GET /api/contact/ endpoint to your Flask backend
-      setMessages([]);
-      console.warn('Contact messages fetch endpoint not implemented in Flask backend');
+      const res = await fetch(`${API_BASE}/api/contact/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setMessages(data);
     } catch (error) {
-      console.error('Error fetching messages:', error);
-      toast.error('Failed to load messages');
+      console.error("Error fetching messages:", error);
+      toast.error("Failed to load messages");
     } finally {
       setLoading(false);
     }
@@ -31,25 +38,41 @@ export default function AdminContactMessages() {
 
   const markAsRead = async (messageId: string) => {
     try {
-      // Note: Your Flask backend doesn't have an endpoint to update contact messages
-      // You'll need to add PUT /api/contact/<id> endpoint to your Flask backend
-      console.warn('Mark as read endpoint not implemented in Flask backend');
-      toast.error('Feature not available yet');
+      const res = await fetch(`${API_BASE}/api/contact/${messageId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ status: "read" }),
+      });
+      if (!res.ok) throw new Error("Failed to update");
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === messageId ? { ...msg, status: "read" as const } : msg
+        )
+      );
+      toast.success("Message marked as read");
     } catch (error) {
-      console.error('Error updating message:', error);
-      toast.error('Failed to update message');
+      console.error("Error updating message:", error);
+      toast.error("Failed to update message");
     }
   };
 
   const deleteMessage = async (messageId: string) => {
     try {
-      // Note: Your Flask backend doesn't have an endpoint to delete contact messages
-      // You'll need to add DELETE /api/contact/<id> endpoint to your Flask backend
-      console.warn('Delete message endpoint not implemented in Flask backend');
-      toast.error('Feature not available yet');
+      const res = await fetch(`${API_BASE}/api/contact/${messageId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to delete");
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      toast.success("Message deleted");
     } catch (error) {
-      console.error('Error deleting message:', error);
-      toast.error('Failed to delete message');
+      console.error("Error deleting message:", error);
+      toast.error("Failed to delete message");
     }
   };
 
@@ -70,7 +93,7 @@ export default function AdminContactMessages() {
         <div>
           <h2 className="text-2xl font-bold">Contact Messages</h2>
           <p className="text-muted-foreground">
-            {messages.filter(m => m.status === 'unread').length} unread messages
+            {messages.filter(m => m.status === "unread").length} unread messages
           </p>
         </div>
       </div>
@@ -84,17 +107,19 @@ export default function AdminContactMessages() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {messages.map((message) => (
-            <Card 
-              key={message.id} 
-              className={`${message.status === 'unread' ? 'border-primary/50 bg-primary/5' : ''}`}
+          {messages.map(message => (
+            <Card
+              key={message.id}
+              className={`${
+                message.status === "unread" ? "border-primary/50 bg-primary/5" : ""
+              }`}
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{message.subject}</CardTitle>
-                      <Badge variant={message.status === 'unread' ? 'default' : 'secondary'}>
+                      <Badge variant={message.status === "unread" ? "default" : "secondary"}>
                         {message.status}
                       </Badge>
                     </div>
@@ -114,7 +139,7 @@ export default function AdminContactMessages() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {message.status === 'unread' && (
+                    {message.status === "unread" && (
                       <Button
                         size="sm"
                         variant="outline"

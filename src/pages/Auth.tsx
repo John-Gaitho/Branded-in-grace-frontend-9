@@ -23,6 +23,7 @@ export default function Auth() {
 
   const redirectTo = searchParams.get('redirect') || '/';
 
+  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       navigate(redirectTo);
@@ -42,9 +43,8 @@ export default function Auth() {
       if (result.error) {
         setError(result.error);
       } else if (mode === 'signup') {
-        setError('');
+        // After signup, switch to signin tab
         setActiveTab('signin');
-        // Show success message for signup
         setError('Account created successfully! Please sign in.');
       }
     } catch (err) {
@@ -54,14 +54,8 @@ export default function Auth() {
     }
   };
 
-  const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  const isValidPassword = (password: string) => {
-    return password.length >= 6;
-  };
-
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidPassword = (password: string) => password.length >= 6;
   const isFormValid = isValidEmail(email) && isValidPassword(password);
 
   if (isLoading) {
@@ -80,14 +74,10 @@ export default function Auth() {
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">G</span>
             </div>
-            <span className="font-bold text-xl grace-text-gradient">
-              Blanded in Grace
-            </span>
+            <span className="font-bold text-xl grace-text-gradient">Branded in Grace</span>
           </div>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>
-            Sign in to your account to continue shopping
-          </CardDescription>
+          <CardTitle>Welcome</CardTitle>
+          <CardDescription>Sign in to your account to continue shopping</CardDescription>
         </CardHeader>
         
         <CardContent>
@@ -97,6 +87,7 @@ export default function Auth() {
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
             
+            {/* Sign In Tab */}
             <TabsContent value="signin" className="space-y-4 mt-6">
               <form onSubmit={(e) => handleSubmit(e, 'signin')} className="space-y-4">
                 <div className="space-y-2">
@@ -135,11 +126,7 @@ export default function Auth() {
                       className="absolute right-0 top-0 h-full px-3"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
                 </div>
@@ -150,16 +137,13 @@ export default function Auth() {
                   </Alert>
                 )}
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={!isFormValid || isSubmitting}
-                >
+                <Button type="submit" className="w-full" disabled={!isFormValid || isSubmitting}>
                   {isSubmitting ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
             </TabsContent>
             
+            {/* Sign Up Tab */}
             <TabsContent value="signup" className="space-y-4 mt-6">
               <form onSubmit={(e) => handleSubmit(e, 'signup')} className="space-y-4">
                 <div className="space-y-2">
@@ -198,11 +182,7 @@ export default function Auth() {
                       className="absolute right-0 top-0 h-full px-3"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -216,11 +196,7 @@ export default function Auth() {
                   </Alert>
                 )}
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={!isFormValid || isSubmitting}
-                >
+                <Button type="submit" className="w-full" disabled={!isFormValid || isSubmitting}>
                   {isSubmitting ? 'Creating Account...' : 'Create Account'}
                 </Button>
               </form>

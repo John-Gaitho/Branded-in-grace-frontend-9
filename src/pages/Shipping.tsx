@@ -1,217 +1,84 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Truck, Clock, MapPin, Package } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Truck, ShoppingBag, Package, Clock, CreditCard, RefreshCcw, PhoneCall } from "lucide-react";
 
-export default function Shipping() {
-  const shippingOptions = [
-    {
-      name: "Standard Shipping",
-      timeframe: "3-5 Business Days",
-      cost: "Free on orders over KSH 2,000",
-      description: "Our most popular option with reliable delivery"
-    },
-    {
-      name: "Express Shipping",
-      timeframe: "1-2 Business Days",
-      cost: "KSH 500",
-      description: "Fast delivery for urgent orders"
-    },
-    {
-      name: "Same Day Delivery",
-      timeframe: "Within 6 Hours",
-      cost: "KSH 800",
-      description: "Available in Nairobi CBD only (orders before 2 PM)"
-    }
-  ];
-
-  const locations = [
-    {
-      area: "Nairobi",
-      zones: ["CBD", "Westlands", "Karen", "Kilimani", "Lavington"],
-      delivery: "1-2 days"
-    },
-    {
-      area: "Mombasa",
-      zones: ["Island", "Mainland", "Nyali", "Bamburi"],
-      delivery: "2-3 days"
-    },
-    {
-      area: "Kisumu",
-      zones: ["City Center", "Milimani", "Nyalenda"],
-      delivery: "3-4 days"
-    },
-    {
-      area: "Other Major Towns",
-      zones: ["Nakuru", "Eldoret", "Thika", "Machakos"],
-      delivery: "3-5 days"
-    }
-  ];
-
+export default function ShippingPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Shipping Information</h1>
-          <p className="text-muted-foreground">
-            Fast, reliable delivery across Kenya for your beautiful cups
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Truck className="h-5 w-5" />
-                Shipping Options
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {shippingOptions.map((option, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-medium">{option.name}</h3>
-                        <p className="text-sm text-muted-foreground">{option.description}</p>
-                      </div>
-                      <Badge variant="outline">{option.timeframe}</Badge>
-                    </div>
-                    <p className="text-sm font-medium text-primary">{option.cost}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Delivery Areas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {locations.map((location, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium">{location.area}</h3>
-                      <Badge variant="secondary">{location.delivery}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {location.zones.join(", ")}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5" />
-                Packaging & Handling
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Secure Packaging</h3>
-                <p className="text-sm text-muted-foreground">
-                  Every cup is carefully wrapped in protective material and placed in a sturdy box. 
-                  We use eco-friendly packaging materials whenever possible to minimize environmental impact.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Processing Time</h3>
-                <p className="text-sm text-muted-foreground">
-                  Orders are typically processed within 1-2 business days. You'll receive a confirmation 
-                  email once your order ships with tracking information.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Special Handling</h3>
-                <p className="text-sm text-muted-foreground">
-                  Fragile items like our ceramic cups receive extra padding and are marked as "Handle with Care" 
-                  to ensure they arrive in perfect condition.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Order Tracking
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Track Your Order</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Once your order ships, you'll receive an email with:
-                </p>
-                <ul className="list-disc pl-6 space-y-1 text-sm text-muted-foreground">
-                  <li>Tracking number</li>
-                  <li>Estimated delivery date</li>
-                  <li>Courier company details</li>
-                  <li>Direct link to track your package</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Delivery Attempts</h3>
-                <p className="text-sm text-muted-foreground">
-                  Our delivery partners will attempt delivery up to 3 times. If delivery fails, 
-                  the package will be held at the nearest pickup point for 7 days.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Important Notes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Delivery Address</h3>
-                <p className="text-sm text-muted-foreground">
-                  Please ensure your delivery address is complete and accurate. We cannot be responsible 
-                  for delays or lost packages due to incorrect addresses.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Signature Required</h3>
-                <p className="text-sm text-muted-foreground">
-                  For security, orders over KSH 5,000 require a signature upon delivery. 
-                  Make sure someone is available to receive the package.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Weather Delays</h3>
-                <p className="text-sm text-muted-foreground">
-                  Severe weather conditions may cause delivery delays. We'll notify you of any 
-                  significant delays and provide updated delivery estimates.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="bg-muted p-6 rounded-lg">
-            <h3 className="font-medium mb-2">Questions About Your Shipment?</h3>
-            <p className="text-sm text-muted-foreground">
-              Contact our customer service team at hello@blandedingrace.com or call +1 (555) 123-4567. 
-              We're here to help ensure your order arrives safely and on time!
-            </p>
-          </div>
+    <div className="container mx-auto px-4 py-12 max-w-3xl animate-fade-in-up">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold mb-4 flex justify-center items-center gap-2">
+          <Truck className="h-6 w-6 text-primary animate-pulse" />
+          Shipping Information
+        </h1>
+        <p className="text-muted-foreground text-sm mb-4">
+          From our hands to your home—Branded In Grace delivers beauty with care.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4 text-sm text-primary underline">
+          <a href="/shop">Shop Now</a>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
         </div>
       </div>
+
+      <Accordion type="multiple" className="space-y-4">
+        <AccordionItem value="local-delivery">
+          <AccordionTrigger className="text-lg font-medium">
+            🛍 Local Delivery – Kenya <ShoppingBag className="ml-2 h-4 w-4 text-green-500" />
+          </AccordionTrigger>
+          <AccordionContent>
+            We proudly use <strong>Pick-Up Mtaani</strong> for secure and efficient nationwide delivery.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="delivery-options">
+          <AccordionTrigger className="text-lg font-medium">
+            📦 Delivery Options <Package className="ml-2 h-4 w-4 text-green-500" />
+          </AccordionTrigger>
+          <AccordionContent>
+            <p><strong>Pick-Up Mtaani Branch Collection:</strong> Select your location at checkout. You'll get an SMS with pick-up instructions.</p>
+            <p><strong>Doorstep Delivery:</strong> Available in select areas at an extra cost. Contact us to confirm availability.</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="delivery-time">
+          <AccordionTrigger className="text-lg font-medium">
+            🕒 Delivery Timeframe <Clock className="ml-2 h-4 w-4 text-green-500" />
+          </AccordionTrigger>
+          <AccordionContent>
+            <ul className="list-disc list-inside">
+              <li>Processing Time: 1–3 business days</li>
+              <li>Delivery Time: 1–3 business days after dispatch</li>
+            </ul>
+            <p className="mt-2 text-sm text-muted-foreground">Note: Non-customized items may ship faster depending on stock.</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="fees">
+          <AccordionTrigger className="text-lg font-medium">
+            💰 Delivery Fees <CreditCard className="ml-2 h-4 w-4 text-green-500" />
+          </AccordionTrigger>
+          <AccordionContent>
+            Rates vary depending on your location and order size. Estimated shipping costs are calculated at checkout.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="tracking">
+          <AccordionTrigger className="text-lg font-medium">
+            🔄 Order Tracking <RefreshCcw className="ml-2 h-4 w-4 text-green-500" />
+          </AccordionTrigger>
+          <AccordionContent>
+            You'll receive a confirmation message and tracking number after shipment. Track your parcel via Pick-Up Mtaani's portal or SMS.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="support">
+          <AccordionTrigger className="text-lg font-medium">
+            📞 Questions About Delivery? <PhoneCall className="ml-2 h-4 w-4 text-green-500" />
+          </AccordionTrigger>
+          <AccordionContent>
+            Email us at <a href="mailto:brandedingrace@gmail.com" className="underline text-primary">brandedingrace@gmail.com</a> or message us on <a href="https://wa.me/254720602028" className="underline text-primary">WhatsApp</a> for any questions.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import { AdminProductForm } from './AdminProductForm';
 export function AdminProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchProducts = async () => {
@@ -33,11 +33,11 @@ export function AdminProductManagement() {
     fetchProducts();
   }, []);
 
-  const deleteProduct = async (id: string) => {
-    setDeletingId(id);
+  const deleteProduct = async (slug: string) => {
+    setDeletingSlug(slug);
     try {
-      await productsAPI.delete(id);
-      setProducts(products.filter(p => p.id !== id));
+      await productsAPI.delete(slug); // ✅ use slug instead of id
+      setProducts(products.filter(p => p.slug !== slug));
       toast({
         title: 'Product deleted',
         description: 'The product has been successfully deleted.',
@@ -50,7 +50,7 @@ export function AdminProductManagement() {
         variant: 'destructive',
       });
     } finally {
-      setDeletingId(null);
+      setDeletingSlug(null);
     }
   };
 
@@ -72,7 +72,7 @@ export function AdminProductManagement() {
           ) : (
             <div className="grid gap-4">
               {products.map((product) => (
-                <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div key={product.slug} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center gap-4">
                     {product.image_url && (
                       <img
@@ -91,11 +91,11 @@ export function AdminProductManagement() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => deleteProduct(product.id)}
-                    disabled={deletingId === product.id}
+                    onClick={() => deleteProduct(product.slug)} // ✅ delete by slug
+                    disabled={deletingSlug === product.slug}
                     className="rounded-full hover-scale transition-all duration-300"
                   >
-                    {deletingId === product.id ? (
+                    {deletingSlug === product.slug ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Trash2 className="h-4 w-4" />

@@ -27,19 +27,17 @@ const Checkout = () => {
     zipCode: ''
   });
 
-  const formatPrice = (price: number) => `KSh ${price.toFixed(2)}`; // Price directly in KES
-
+  const formatPrice = (price: number) => `KSh ${price.toFixed(2)}`;
   const subtotal = cart.reduce((sum, item) => sum + ((item.product?.price || 0) * item.quantity), 0);
   const total = subtotal;
 
   const createOrder = async (status: string = 'pending') => {
     try {
-      // Create the order
       const orderData = {
         user_id: user?.id,
         email: billingInfo.email || user?.email || '',
         total_amount: Math.round(total),
-        status: status,
+        status,
         shipping_address: {
           firstName: billingInfo.firstName,
           lastName: billingInfo.lastName,
@@ -51,7 +49,6 @@ const Checkout = () => {
 
       const order = await ordersAPI.create(orderData);
 
-      // Create order items
       for (const item of cart) {
         await ordersAPI.createOrderItem({
           order_id: order.id,
@@ -82,7 +79,6 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
-      // Create order first
       const order = await createOrder('pending');
       
       const data = await mpesaAPI.initiatePayment(
@@ -91,11 +87,16 @@ const Checkout = () => {
         `ORDER-${order.id}`
       ) as any;
 
-      if (data.success) {
+      // ✅ Accept Daraja & backend wrapper responses
+      if (
+        data.ResponseCode === "0" ||
+        data.status === "stk_push_sent" ||
+        data.ResponseDescription?.includes("Success")
+      ) {
         toast.success('M-Pesa payment initiated! Please check your phone for the payment prompt.');
-        pollPaymentStatus(data.checkout_request_id, order.id);
+        pollPaymentStatus(data.CheckoutRequestID || data.checkout_request_id, order.id);
       } else {
-        throw new Error(data.message || 'Payment initiation failed');
+        throw new Error(data.errorMessage || data.message || 'Payment initiation failed');
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -106,15 +107,15 @@ const Checkout = () => {
   };
 
   const pollPaymentStatus = async (checkoutRequestId: string, orderId: string) => {
-    const maxAttempts = 30; // Poll for 5 minutes (30 * 10 seconds)
+    const maxAttempts = 30; // 5 minutes
     let attempts = 0;
 
     const poll = async () => {
       try {
         const data = await mpesaAPI.checkStatus(checkoutRequestId) as any;
 
-        if (data.status === 'completed') {
-          // Update order status to paid
+        // ✅ Map Daraja callback results
+        if (data.status === 'completed' || data.ResultCode === "0") {
           await ordersAPI.updateStatus(orderId, 'completed');
           toast.success('Payment completed successfully!');
           clearCart();
@@ -122,8 +123,7 @@ const Checkout = () => {
           return;
         }
 
-        if (data.status === 'failed') {
-          // Update order status to failed
+        if (data.status === 'failed' || (data.ResultCode && data.ResultCode !== "0")) {
           await ordersAPI.updateStatus(orderId, 'failed');
           toast.error('Payment failed. Please try again.');
           return;
@@ -131,7 +131,7 @@ const Checkout = () => {
 
         attempts++;
         if (attempts < maxAttempts) {
-          setTimeout(poll, 10000); // Poll every 10 seconds
+          setTimeout(poll, 10000);
         } else {
           toast.warning('Payment status check timed out. Please contact support if payment was deducted.');
         }
@@ -152,7 +152,6 @@ const Checkout = () => {
     if (paymentMethod === 'mpesa') {
       await handleMpesaPayment();
     } else {
-      // Handle other payment methods here
       toast.info('Other payment methods coming soon!');
     }
   };

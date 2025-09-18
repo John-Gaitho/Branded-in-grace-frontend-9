@@ -1,39 +1,44 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 
-type UserRole = 'admin' | 'owner' | 'user' | null;
+type UserRole = 'ADMIN' | 'CUSTOMER' | null;
 
 export function useUserRole() {
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // make sure you return token from useAuth
   const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserRole() {
-      if (!user) {
+      if (!token) {
         setRole(null);
         setLoading(false);
         return;
       }
 
       try {
-        // Note: Your Flask backend doesn't have user roles endpoint yet
-        // You'll need to add user roles functionality to your Flask backend
-        // For now, we'll default to 'user' role
-        setRole('user');
-        console.warn('User roles not implemented in Flask backend yet');
+        const res = await fetch('http://localhost:5000/api/auth/role', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error('Failed to fetch role');
+
+        const data = await res.json();
+        setRole(data.role as UserRole);
       } catch (error) {
         console.error('Error fetching user role:', error);
-        setRole('user');
+        setRole(null);
       } finally {
         setLoading(false);
       }
     }
 
     fetchUserRole();
-  }, [user]);
+  }, [token]);
 
-  const isAdmin = role === 'admin' || role === 'owner';
+  const isAdmin = role === 'ADMIN';
 
   return { role, loading, isAdmin };
 }

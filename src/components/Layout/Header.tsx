@@ -41,12 +41,13 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <span className="text-2xl font-bold text-foreground">BG</span>
-            <span className="text-xl font-bold">
-              <span className="text-foreground">Branded in </span>
-              <span className="text-primary">Grace</span>
+          {/* Brand */}
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">BG</span>
+            </div>
+            <span className="font-bold text-xl grace-text-gradient">
+              Branded In Grace
             </span>
           </Link>
 
@@ -72,11 +73,7 @@ export function Header() {
               onClick={toggleTheme}
               className="hidden sm:flex"
             >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
             {/* Cart */}
@@ -88,8 +85,8 @@ export function Header() {
             >
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
-                <Badge 
-                  variant="destructive" 
+                <Badge
+                  variant="destructive"
                   className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
                 >
                   {cartCount > 99 ? '99+' : cartCount}
@@ -119,9 +116,7 @@ export function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate('/orders')}>
-                    My Orders
-                  </DropdownMenuItem>
+                  
                   <DropdownMenuItem onClick={() => navigate('/profile')}>
                     Profile
                   </DropdownMenuItem>
@@ -172,16 +167,8 @@ export function Header() {
               ))}
               <div className="flex items-center justify-between px-2 py-2">
                 <span className="text-sm text-muted-foreground">Theme</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleTheme}
-                >
-                  {theme === 'dark' ? (
-                    <Sun className="h-4 w-4" />
-                  ) : (
-                    <Moon className="h-4 w-4" />
-                  )}
+                <Button variant="ghost" size="sm" onClick={toggleTheme}>
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </Button>
               </div>
             </nav>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart, Mail, Phone, MapPin } from 'lucide-react';
+import { FaFacebook, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
 
 export function Footer() {
   return (
@@ -13,13 +14,29 @@ export function Footer() {
                 <span className="text-primary-foreground font-bold text-lg">G</span>
               </div>
               <span className="font-bold text-xl grace-text-gradient">
-                Blanded in Grace
+                Branded In Grace
               </span>
             </div>
             <p className="text-muted-foreground text-sm">
-              Beautiful, handcrafted cups that bring grace to every moment.
-              Made with love and attention to detail.
+              Beautiful, handcrafted products that bring grace to every moment.
+              
             </p>
+
+            {/* Social Links */}
+            <div className="flex space-x-4 mt-2 text-muted-foreground">
+              <a href="https://www.facebook.com/profile.php?id=61559840783163&mibextid=ZbWKwL" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <FaFacebook className="h-5 w-5 hover:text-foreground transition-colors" />
+              </a>
+              <a href="https://www.instagram.com/branded_in_grace" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <FaInstagram className="h-5 w-5 hover:text-foreground transition-colors" />
+              </a>
+              <a href="https://www.tiktok.com/@branded.in.grace" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <FaTiktok className="h-5 w-5 hover:text-foreground transition-colors" />
+              </a>
+              <a href="https://wa.me/254720602028" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                <FaWhatsapp className="h-5 w-5 hover:text-foreground transition-colors" />
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -82,28 +99,29 @@ export function Footer() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>hello@blandedingrace.com</span>
+                <span>brandedingrace@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+254720602028</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>123 Grace Street, Beautiful City</span>
+                <span>Nairobi, Kenya</span>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Bottom bar */}
         <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between">
           <p className="text-muted-foreground text-sm">
-            © 2024 Blanded in Grace. All rights reserved.
+            © 2025 Branded In Grace. All rights reserved.
           </p>
           <div className="flex items-center space-x-1 text-muted-foreground text-sm mt-4 sm:mt-0">
-            <span>Made with</span>
+            <span>Elegance woven</span>
             <Heart className="h-4 w-4 text-red-500" />
-            <span>for coffee lovers</span>
+            <span>into every brand</span>
           </div>
         </div>
       </div>

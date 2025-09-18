@@ -9,7 +9,7 @@ export default function Returns() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">Returns & Exchanges</h1>
           <p className="text-muted-foreground">
-            We want you to love your Blanded in Grace cups. Here's our return policy.
+            We want you to love your Branded in Grace products. Here's our return policy.
           </p>
         </div>
 
@@ -23,7 +23,7 @@ export default function Returns() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                You have <strong>30 days</strong> from the date of delivery to return items for a full refund or exchange.
+                You have <strong>3 days</strong> from the date of delivery to return items for a full refund or exchange.
                 Items must be in original condition and packaging.
               </p>
             </CardContent>
@@ -39,7 +39,7 @@ export default function Returns() {
                 <div>
                   <h4 className="font-medium">Standard Products</h4>
                   <p className="text-sm text-muted-foreground">
-                    All regular cups and mugs in unused condition with original packaging
+                    All regular products in unused condition with original packaging
                   </p>
                 </div>
               </div>
@@ -59,7 +59,7 @@ export default function Returns() {
                 <div>
                   <h4 className="font-medium">Custom/Personalized Items</h4>
                   <p className="text-sm text-muted-foreground">
-                    Cannot be returned unless defective or damaged upon arrival
+                    Cannot be returned unless defective or damaged during shipping
                   </p>
                 </div>
               </div>
@@ -90,7 +90,7 @@ export default function Returns() {
                   <div>
                     <h4 className="font-medium">Contact Us</h4>
                     <p className="text-sm text-muted-foreground">
-                      Email us at hello@blandedingrace.com with your order number and reason for return
+                      Email us at brandedingrace@gmail.com with your order number and reason for return
                     </p>
                   </div>
                 </div>
@@ -110,7 +110,7 @@ export default function Returns() {
                   <div>
                     <h4 className="font-medium">Ship Your Return</h4>
                     <p className="text-sm text-muted-foreground">
-                      Package items securely and ship to our returns address (we'll cover return shipping for defective items)
+                      Package items securely and ship to our returns address 
                     </p>
                   </div>
                 </div>
@@ -120,7 +120,7 @@ export default function Returns() {
                   <div>
                     <h4 className="font-medium">Receive Refund</h4>
                     <p className="text-sm text-muted-foreground">
-                      Once we receive and inspect your return, we'll process your refund within 3-5 business days
+                      Once we receive and inspect your return, we'll process your refund within 2-3 business days
                     </p>
                   </div>
                 </div>

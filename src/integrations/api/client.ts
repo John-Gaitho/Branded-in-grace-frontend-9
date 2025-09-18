@@ -3,7 +3,7 @@ import type { Product, CartItem, Order, Review } from '@/types';
 
 // Base URL for your Flask backend
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-domain.com' 
+  ? 'https://localhost:5000'  
   : 'http://localhost:5000';
 
 // Helper function to get auth token from localStorage
@@ -159,7 +159,7 @@ export const ordersAPI = {
 
   // Admin function to get all orders - same endpoint but with admin privileges
   listAll: async () => {
-    return await apiRequest('/api/orders/') as Order[];
+    return await apiRequest('/api/admin/orders/') as Order[];
   },
 
   get: async (id: string) => {
@@ -245,22 +245,36 @@ export const reviewsAPI = {
 
 // Contact API using Flask backend
 export const contactAPI = {
+  // Regular users can create messages
   create: async (contactData: any) => {
     return await apiRequest('/api/contact/', {
       method: 'POST',
       body: JSON.stringify(contactData),
     });
   },
+
+  // Admin only: list all messages
+  list: async () => {
+    return await apiRequest('/api/contact/');
+  },
+
+  // Admin only: delete a message
+  delete: async (id: string) => {
+    return await apiRequest(`/api/contact/${id}`, {
+      method: 'DELETE',
+    });
+  },
 };
+
 
 // Upload API - Note: You'll need to implement file upload endpoint in your Flask backend
 export const uploadAPI = {
   uploadProductImage: async (file: File) => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
 
     const token = getAuthToken();
-    const response = await fetch(`${API_BASE_URL}/api/upload/product-image`, {
+    const response = await fetch(`${API_BASE_URL}/api/upload/files`, {
       method: 'POST',
       headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       body: formData,
