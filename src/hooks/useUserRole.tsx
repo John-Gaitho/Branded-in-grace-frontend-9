@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 type UserRole = 'ADMIN' | 'CUSTOMER' | null;
 
@@ -17,7 +18,7 @@ export function useUserRole() {
       }
 
       try {
-        const res = await fetch('http://localhost:5000/api/auth/role', {
+        const res = await fetch(`${API_URL}/api/auth/role`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
