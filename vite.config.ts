@@ -11,12 +11,22 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  build: {
+    outDir: "dist",
+  },
+  // 👇 This is the key part for React Router SPA refresh support
+  preview: {
+    port: 5000,
+    strictPort: true,
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom"],
   },
 }));
